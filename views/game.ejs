@@ -1,0 +1,12 @@
+<%- include('partials/header') %>
+
+  <h1>
+    <%= game.title %>
+  </h1>
+  <img src="<%= game.image %>" alt="<%= game.title %>" class="img-fluid mb-3">
+  <p>
+    <%= game.description %>
+  </p>
+  <a href="/" class="btn btn-secondary">Atpakaļ</a>
+
+  <%- include('partials/footer') %>

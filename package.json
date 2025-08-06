@@ -12,6 +12,7 @@
   "description": "First BLOG Project using express server",
   "dependencies": {
     "ejs": "^3.1.10",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "path": "^0.12.7"
   }
 }
