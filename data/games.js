@@ -27,8 +27,8 @@ export const games = [
       },
       {
         name: "Paula(8+ gadi)",
-        score: 2,
-        comment: "Garlaicīga.",
+        score: 3,
+        comment: "Interesanta",
       },
     ],
     players: "2–5",
