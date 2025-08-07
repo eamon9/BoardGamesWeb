@@ -1,12 +1,96 @@
 <%- include('partials/header') %>
 
-  <h1>
-    <%= game.title %>
-  </h1>
-  <img src="<%= game.image %>" alt="<%= game.title %>" class="img-fluid mb-3">
-  <p>
-    <%= game.description %>
-  </p>
-  <a href="/" class="btn btn-secondary">Atpakaļ</a>
+  <div class="container mt-5">
+    <h1>
+      <%= game.title %>
+    </h1>
+    <h2 class="text-muted mb-4">
+      <%= game.subtitle %>
+    </h2>
 
-  <%- include('partials/footer') %>
+    <div class="row">
+      <div class="col-md-6">
+        <img src="<%= game.image %>" class="img-fluid rounded shadow-sm" alt="<%= game.title %>">
+
+        <!-- Spēles vidējais vērtējums ar 🎲 -->
+        <% if (game.ratings && game.ratings.length> 0) {
+          const avg = game.ratings.reduce((sum, r) => sum + r.score, 0) / game.ratings.length;
+          const fullDice = Math.floor(avg);
+          const halfDice = (avg - fullDice) >= 0.5 ? 1 : 0;
+          const emptyDice = 5 - fullDice - halfDice;
+          %>
+          <div class="rating-big" style="font-size: 2rem;">
+            <% for(let i=0; i < fullDice; i++) { %>
+              <span>🎲</span>
+              <% } %>
+                <% if(halfDice) { %>
+                  <span style="opacity: 0.5;">🎲</span>
+                  <% } %>
+                    <% for(let i=0; i < emptyDice; i++) { %>
+                      <span style="opacity: 0.2;">🎲</span>
+                      <% } %>
+                        (<%= avg.toFixed(1) %>/5)
+          </div>
+
+          <!-- Ģimenes vērtējumi un komentāri ar 🎲 pie katra vērtējuma -->
+          <h3>Ģimenes vērtējumi</h3>
+          <ul>
+            <% game.ratings.forEach(rating=> {
+              const full = Math.floor(rating.score);
+              const half = (rating.score - full) >= 0.5 ? 1 : 0;
+              const empty = 5 - full - half;
+              %>
+              <li>
+                <strong>
+                  <%= rating.name %>
+                </strong> –
+                <br>
+                <span class="rating-small" style="font-size: 1.2rem;">
+                  <% for(let i=0; i < full; i++) { %>
+                    <span>🎲</span>
+                    <% } %>
+                      <% if(half) { %>
+                        <span style="opacity: 0.5;">🎲</span>
+                        <% } %>
+                          <% for(let i=0; i < empty; i++) { %>
+                            <span style="opacity: 0.2;">🎲</span>
+                            <% } %>
+                </span>
+                (<%= rating.score %>/5)
+
+                  <% if (rating.comment) { %>
+                    <p><em>
+                        <%= rating.comment %>
+                      </em></p>
+                    <% } %>
+              </li>
+              <% }) %>
+          </ul>
+          <% } else { %>
+            <p>Vērtējumi nav pieejami.</p>
+            <% } %>
+      </div>
+
+      <div class="col-md-6">
+        <p><strong>Apraksts:</strong>
+          <%= game.description %>
+        </p>
+        <p><strong>Spēlētāji:</strong>
+          <%= game.players %>
+        </p>
+        <p><strong>Ilgums:</strong>
+          <%= game.duration %>
+        </p>
+        <p><strong>Vecums:</strong>
+          <%= game.age %>
+        </p>
+        <p><strong>Kategorijas:</strong>
+          <%= game.category.join(', ') %></p>
+        <p><strong>Mans viedoklis:</strong> <%= game.review %></p>
+
+        <a onclick="window.history.back()" class="btn btn-outline-primary mt-3">⬅ Atpakaļ</a>
+      </div>
+    </div>
+  </div>
+
+<%- include('partials/footer') %>

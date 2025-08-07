@@ -1,3 +1,15 @@
+body {
+  background-color: #F1E0C5;
+  color: #333;
+}
+
+.card {
+  background-color: #F9EFE0;
+  border-radius: 10px;
+  border: 1px solid #e5d4b8;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
 .bd-placeholder-img {
   font-size: 1.125rem;
   text-anchor: middle;
@@ -74,4 +86,41 @@
 
 .bd-mode-toggle .dropdown-menu .active .bi {
   display: block !important;
+}
+
+/* ABOUT PAGE */
+.text-shadow {
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* RATING BIG */
+.rating-big {
+  display: flex;
+  justify-content: center; /* Centrs horizontāli */
+  align-items: center;
+  gap: 10px; /* Atstarpe starp kauliņiem */
+  font-size: 3.5rem; /* Lielāks izmērs */
+  margin-bottom: 0.5rem;
+}
+
+.rating-big span.half {
+  opacity: 0.5;
+}
+
+.rating-big span.empty {
+  opacity: 0.2;
+}
+
+/* RATING small */
+.rating-small span {
+  font-size: 1.2rem;
+  margin-right: 3px;
+}
+
+.rating-small .half {
+  opacity: 0.5;
+}
+
+.rating-small .empty {
+  opacity: 0.2;
 }
