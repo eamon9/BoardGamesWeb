@@ -62,7 +62,9 @@
                     <p><em>
                         <%= rating.comment %>
                       </em></p>
-                    <% } %>
+                    <% } else { %>
+                      <p></p>
+                      <% } %>
               </li>
               <% }) %>
           </ul>
@@ -88,7 +90,7 @@
           <%= game.category.join(', ') %></p>
         <p><strong>Mans viedoklis:</strong> <%= game.review %></p>
 
-        <a onclick="window.history.back()" class="btn btn-outline-primary mt-3">⬅ Atpakaļ</a>
+        <a onclick="window.history.back()" class="btn btn-custom mt-3">⬅ Atpakaļ</a>
       </div>
     </div>
   </div>

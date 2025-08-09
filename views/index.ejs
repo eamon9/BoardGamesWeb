@@ -39,9 +39,9 @@
       </select>
     </div>
     <div class="col-md-2">
-      <button type="submit" class="btn btn-primary w-100">Meklēt</button>
+      <button type="submit" class="btn btn-custom w-100">Meklēt</button>
     </div>
-  </form>  
+  </form>
 
   <!-- Spēļu kartītes -->
   <div class="row">
@@ -55,7 +55,7 @@
           let fullDice = 0;
           let halfDice = 0;
           let emptyDice = 5;
-  
+
           if (game.ratings && game.ratings.length > 0) {
           avg = game.ratings.reduce((sum, r) => sum + r.score, 0) / game.ratings.length;
           fullDice = Math.floor(avg);
@@ -66,39 +66,54 @@
           <div class="col-md-4 mb-4">
             <a href="/game/<%= game.id %>" class="text-decoration-none text-dark">
               <div class="card h-100 d-flex flex-column">
-                <img src="<%= game.image %>" class="card-img-top" alt="<%= game.title %>">
-  
-                <% if (game.ratings && game.ratings.length> 0) { %>
-                  <div class="rating-big" style="font-size: 2rem;">
-                    <% for(let i=0; i < fullDice; i++) { %>
-                      <span>🎲</span>
-                      <% } %>
-                        <% if (halfDice) { %>
-                          <span style="opacity: 0.5;">🎲</span>
-                          <% } %>
-                            <% for(let i=0; i < emptyDice; i++) { %>
-                              <span style="opacity: 0.2;">🎲</span>
-                              <% } %>
-                                (<%= avg.toFixed(1) %>/5)
-                  </div>
+
+                <% if (game.image) { %>
+                  <img src="<%= game.image %>" class="card-img-top game-image" alt="<%= game.title %>">
                   <% } else { %>
-                    <div class="text-muted" style="font-size: 1rem;">Vērtējums nav pieejams</div>
+                    <div class="card-img-top placeholder-image d-flex align-items-center justify-content-center">
+                      <span class="text-white">Nav attēla</span>
+                    </div>
                     <% } %>
-  
-                      <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">
-                          <%= game.title %>
-                        </h5>
-                        <h6 class="text-muted">
-                          <%= game.subtitle %>
-                        </h6>
-                        <p class="card-text">
-                          <%= game.description.length> 250 ? game.description.slice(0, 250) + "..." : game.description %>
-                        </p>
-                        <div class="mt-auto">
-                          <span class="btn btn-outline-primary">Lasīt vairāk</span>
+
+                      <% if (game.ratings && game.ratings.length> 0) { %>
+                        <div class="rating-big" style="font-size: 2rem;">
+                          <% for (let i=0; i < fullDice; i++) { %>
+                            <span>🎲</span>
+                            <% } %>
+                              <% if (halfDice) { %>
+                                <span style="opacity: 0.5;">🎲</span>
+                                <% } %>
+                                  <% for (let i=0; i < emptyDice; i++) { %>
+                                    <span style="opacity: 0.2;">🎲</span>
+                                    <% } %>
+                                      <span class="ms-2 text-muted" style="font-size: 2rem;">
+                                        (<%= avg.toFixed(1) %>/5)
+                                      </span>
                         </div>
-                      </div>
+                        <% } else { %>
+                          <div class="rating-big" style="font-size: 2rem; opacity: 0.3;">
+                            <span>🎲🎲🎲🎲🎲</span>
+                            <span class="ms-2">(-/5)</span>
+                          </div>
+                          <% } %>
+
+
+                            <div class="card-body d-flex flex-column">
+                              <h5 class="card-title">
+                                <%= game.title %>
+                              </h5>
+                              <h6 class="text-muted">
+                                <%= game.subtitle %>
+                              </h6>
+                              <p class="card-text">
+                                <%= game.description.length> 250 ? game.description.slice(0, 250) + "..." :
+                                  game.description %>
+                              </p>
+                              <div class="mt-auto">
+                                <span class="btn btn-custom">Lasīt vairāk</span>
+                              </div>
+                            </div>
+
               </div>
             </a>
           </div>
