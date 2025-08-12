@@ -1154,7 +1154,13 @@ export const games = [
     location: "Plaukts",
     components: ["Oriģinālais iepakojumns"],
     userRules: "",
-    ratings: [],
+    ratings: [
+      {
+        name: userImants,
+        score: 5,
+        comment: "10/10",
+      },
+    ],
     players: "1",
     duration: "48h",
     age: "14+",
