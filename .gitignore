@@ -4,3 +4,6 @@ node-modules/*
 
 images/*
 !images/.gitkeep
+
+.env
+todo.todo

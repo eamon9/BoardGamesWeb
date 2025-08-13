@@ -64,9 +64,8 @@
           }
           %>
           <div class="col-md-4 mb-4">
-            <a href="/game/<%= game.id %>" class="text-decoration-none text-dark">
+            <a href="/game/<%= game._id %>" class="text-decoration-none text-dark">
               <div class="card h-100 d-flex flex-column">
-
                 <% if (game.image) { %>
                   <img src="<%= game.image %>" class="card-img-top game-image" alt="<%= game.title %>">
                   <% } else { %>
@@ -97,7 +96,6 @@
                           </div>
                           <% } %>
 
-
                             <div class="card-body d-flex flex-column">
                               <h5 class="card-title">
                                 <%= game.title %>
@@ -113,7 +111,6 @@
                                 <span class="btn btn-custom">Lasīt vairāk</span>
                               </div>
                             </div>
-
               </div>
             </a>
           </div>

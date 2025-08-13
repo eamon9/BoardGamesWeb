@@ -163,3 +163,14 @@ h5 {
   background-color: #5a6268; /* nedaudz tumšāks uz hover */
   color: #fff;
 }
+
+.navbar-dark .navbar-nav .nav-link.active {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* Dropdown aktīvajam elementam */
+.navbar-dark .navbar-nav .dropdown-toggle.active {
+  background-color: rgba(255, 255, 255, 0.1);
+}

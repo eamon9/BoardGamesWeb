@@ -1,0 +1,13 @@
+<%- include('partials/header') %>
+  <div class="container mt-5">
+    <h1>500 - Servera kļūda</h1>
+    <p>Kautkas nogāja greizi mūsu pusē. Lūdzu mēģiniet nedaudz vēlāk.</p>
+    <% if (error) { %>
+      <div class="alert alert-danger mt-3">
+        <strong>Kļūdas info:</strong>
+        <%= error.message %>
+      </div>
+      <% } %>
+        <a href="/" class="btn btn-custom">Atgriezties Sākumlapā</a>
+  </div>
+  <%- include('partials/footer') %>

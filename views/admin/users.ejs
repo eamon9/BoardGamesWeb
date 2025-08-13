@@ -1,0 +1,43 @@
+<%- include('../partials/header') %>
+  <div class="container mt-5">
+    <h1>User Management</h1>
+
+    <table class="table table-striped mt-4">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Admin Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(user=> { %>
+          <tr>
+            <td>
+              <%= user.username %>
+            </td>
+            <td>
+              <% if (user.isAdmin) { %>
+                <span class="badge bg-success">Admin</span>
+                <% } else { %>
+                  <span class="badge bg-secondary">User</span>
+                  <% } %>
+            </td>
+            <td>
+              <form action="/admin/users/<%= user._id %>/toggle-admin" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-warning me-2">
+                  <%= user.isAdmin ? 'Remove Admin' : 'Make Admin' %>
+                </button>
+              </form>
+              <form action="/admin/users/<%= user._id %>/delete" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+      </tbody>
+    </table>
+
+    <a href="/admin/dashboard" class="btn btn-secondary mt-3">Back to Dashboard</a>
+  </div>
+  <%- include('../partials/footer') %>

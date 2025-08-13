@@ -10,89 +10,230 @@
 
     <div class="row">
       <div class="col-md-6">
-        <img src="<%= game.image %>" class="img-fluid rounded shadow-sm" alt="<%= game.title %>">
-
-        <!-- Spēles vidējais vērtējums ar 🎲 -->
-        <% if (game.ratings && game.ratings.length> 0) {
-          const avg = game.ratings.reduce((sum, r) => sum + r.score, 0) / game.ratings.length;
-          const fullDice = Math.floor(avg);
-          const halfDice = (avg - fullDice) >= 0.5 ? 1 : 0;
-          const emptyDice = 5 - fullDice - halfDice;
-          %>
-          <div class="rating-big" style="font-size: 2rem;">
-            <% for(let i=0; i < fullDice; i++) { %>
-              <span>🎲</span>
-              <% } %>
-                <% if(halfDice) { %>
-                  <span style="opacity: 0.5;">🎲</span>
-                  <% } %>
-                    <% for(let i=0; i < emptyDice; i++) { %>
-                      <span style="opacity: 0.2;">🎲</span>
-                      <% } %>
-                        (<%= avg.toFixed(1) %>/5)
-          </div>
-
-          <!-- Ģimenes vērtējumi un komentāri ar 🎲 pie katra vērtējuma -->
-          <h3>Ģimenes vērtējumi</h3>
-          <ul>
-            <% game.ratings.forEach(rating=> {
-              const full = Math.floor(rating.score);
-              const half = (rating.score - full) >= 0.5 ? 1 : 0;
-              const empty = 5 - full - half;
-              %>
-              <li>
-                <strong>
-                  <%= rating.name %>
-                </strong> –
-                <br>
-                <span class="rating-small" style="font-size: 1.2rem;">
-                  <% for(let i=0; i < full; i++) { %>
-                    <span>🎲</span>
-                    <% } %>
-                      <% if(half) { %>
-                        <span style="opacity: 0.5;">🎲</span>
-                        <% } %>
-                          <% for(let i=0; i < empty; i++) { %>
-                            <span style="opacity: 0.2;">🎲</span>
-                            <% } %>
-                </span>
-                (<%= rating.score %>/5)
-
-                  <% if (rating.comment) { %>
-                    <p><em>
-                        <%= rating.comment %>
-                      </em></p>
-                    <% } else { %>
-                      <p></p>
-                      <% } %>
-              </li>
-              <% }) %>
-          </ul>
+        <% if (game.image) { %>
+          <img src="<%= game.image %>" class="img-fluid rounded shadow-sm mb-3" alt="<%= game.title %>">
           <% } else { %>
-            <p>Vērtējumi nav pieejami.</p>
+            <div class="bg-secondary text-white p-5 text-center rounded mb-3">
+              Nav attēla
+            </div>
             <% } %>
+
+              <!-- SPĒLES VIDĒJAIS VĒRTĒJUMS -->
+              <% if (game.ratings && game.ratings.length> 0) {
+                const avg = game.ratings.reduce((sum, r) => sum + r.score, 0) / game.ratings.length;
+                const fullDice = Math.floor(avg);
+                const halfDice = (avg - fullDice) >= 0.5 ? 1 : 0;
+                const emptyDice = 5 - fullDice - halfDice;
+                %>
+                <div class="rating-big text-center mb-4" style="font-size: 2.5rem;">
+                  <% for(let i=0; i < fullDice; i++) { %><span class="mx-1">🎲</span>
+                    <% } %>
+                      <% if(halfDice) { %><span class="mx-1" style="opacity: 0.5;">🎲</span>
+                        <% } %>
+                          <% for(let i=0; i < emptyDice; i++) { %><span class="mx-1" style="opacity: 0.2;">🎲</span>
+                            <% } %>
+                              <div class="mt-2" style="font-size: 1.5rem;">
+                                (<%= avg.toFixed(1) %>/5 no <%= game.ratings.length %> vērtējumiem)
+                              </div>
+                </div>
+                <% } else { %>
+                  <div class="no-ratings alert alert-info mt-4">
+                    <p class="mb-0">Vērtējumi nav pieejami.</p>
+                  </div>
+                  <% } %>
+
+                    <!-- ĢIMENES VĒRTĒJUMI -->
+                    <div class="family-ratings mt-5">
+                      <h3 class="mb-4">Ģimenes vērtējumi</h3>
+                      <div class="ratings-list">
+                        <% if (game.ratings) { game.ratings.forEach((rating, index)=> {
+                          const full = Math.floor(rating.score);
+                          const half = (rating.score - full) >= 0.5 ? 1 : 0;
+                          const empty = 5 - full - half;
+                          %>
+                          <div class="rating-item mb-4 p-3 bg-light rounded">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                              <strong>
+                                <%= rating.name %>
+                              </strong>
+                              <span style="font-size: 1.2rem;">
+                                <% for(let i=0; i < full; i++) { %><span>🎲</span>
+                                  <% } %>
+                                    <% if(half) { %><span style="opacity: 0.5;">🎲</span>
+                                      <% } %>
+                                        <% for(let i=0; i < empty; i++) { %><span style="opacity: 0.2;">🎲</span>
+                                          <% } %>
+                                            (<%= rating.score %>/5)
+                              </span>
+                            </div>
+                            <% if (rating.comment) { %>
+                              <div class="rating-comment mt-2">
+                                <p class="mb-0"><em>"<%= rating.comment %>"</em></p>
+                              </div>
+                              <% } %>
+
+                                <% if (isAdmin) { %>
+                                  <!-- Admin rediģēšanas forma esošam vērtējumam -->
+                                  <form action="/game/<%= game._id %>/ratings/<%= index %>/edit" method="POST"
+                                    class="mt-2">
+                                    <div class="mb-2">
+                                      <input type="hidden" name="name" value="<%= rating.name %>">
+                                    </div>
+                                    <div class="mb-2 d-flex gap-2">
+                                      <input type="number" name="score" value="<%= rating.score %>" class="form-control"
+                                        min="0" max="5" step="0.1">
+                                      <input type="text" name="comment" value="<%= rating.comment %>"
+                                        class="form-control" placeholder="Komentārs">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-sm">Saglabāt</button>
+                                    <a href="/game/<%= game._id %>/ratings/<%= index %>/delete"
+                                      class="btn btn-danger btn-sm">Dzēst</a>
+                                  </form>
+                                  <% } %>
+                          </div>
+                          <% }) } %>
+                      </div>
+
+                      <% if (isAdmin) { %>
+                        <div class="add-rating mt-4 p-3 border rounded bg-light">
+                          <h4>Pievienot / labot vērtējumu</h4>
+                      
+                          <% const users=["Imants (35+ gadi)", "Santa (35+ gadi)" , "Toms (11+ gadi)" , "Paula (8+ gadi)" ]; const
+                            existingRatings={}; if (game.ratings) { game.ratings.forEach(r=> {
+                            existingRatings[r.name] = r;
+                            });
+                            }
+                            // Atlasām tikai tos lietotājus, kuri vēl nav pievienojuši vērtējumu
+                            const availableUsers = users.filter(u => !existingRatings[u]);
+                            %>
+                      
+                            <form action="/game/<%= game._id %>/ratings/new" method="POST">
+                              <div class="mb-3">
+                                <label for="ratingName" class="form-label">Lietotājs</label>
+                                <select class="form-select" name="name" id="ratingName" required>
+                                  <option value="" selected disabled>Izvēlies lietotāju</option>
+                                  <% availableUsers.forEach(user=> { %>
+                                    <option value="<%= user %>">
+                                      <%= user %>
+                                    </option>
+                                    <% }) %>
+                                </select>
+                              </div>
+                      
+                              <div class="mb-3">
+                                <label for="ratingScore" class="form-label">Vērtējums (1-5)</label>
+                                <input type="number" class="form-control" name="score" id="ratingScore" min="1" max="5" step="0.5" required>
+                              </div>
+                      
+                              <div class="mb-3">
+                                <label for="ratingComment" class="form-label">Komentārs</label>
+                                <textarea class="form-control" name="comment" id="ratingComment" rows="2"></textarea>
+                              </div>
+                      
+                              <button type="submit" class="btn btn-primary">Saglabāt</button>
+                            </form>
+                        </div>
+                        <% } %>
+
+
+
+                    </div>
       </div>
 
       <div class="col-md-6">
+        <!-- SPĒLES DETALAS -->
         <p><strong>Apraksts:</strong>
           <%= game.description %>
         </p>
         <p><strong>Spēlētāji:</strong>
-          <%= game.players %>
+          <% if (game.minPlayers && game.maxPlayers) { %>
+            <% if (game.minPlayers===game.maxPlayers) { %>
+              <%= game.minPlayers %>
+                <% } else { %>
+                  <%= game.minPlayers %>-<%= game.maxPlayers %>
+                      <% } %>
+                        <% } else if (game.minPlayers) { %>
+                          <%= game.minPlayers %>+<% } else { %>?<% } %>
         </p>
         <p><strong>Ilgums:</strong>
-          <%= game.duration %>
+          <% if (game.minDuration && game.maxDuration) { %>
+            <% if (game.minDuration===game.maxDuration) { %>
+              <%= game.minDuration %> min<% } else { %>
+                  <%= game.minDuration %>-<%= game.maxDuration %> min<% } %>
+                        <% } else if (game.minDuration) { %>
+                          <%= game.minDuration %> min<% } else { %>?<% } %>
         </p>
         <p><strong>Vecums:</strong>
-          <%= game.age %>
+          <% if (game.minAge && game.maxAge) { %>
+            <% if (game.minAge===game.maxAge) { %>
+              <%= game.minAge %>+<% } else { %>
+                  <%= game.minAge %>-<%= game.maxAge %>
+                      <% } %>
+                        <% } else if (game.minAge) { %>
+                          <%= game.minAge %>+<% } else { %>?<% } %>
         </p>
         <p><strong>Kategorijas:</strong>
-          <%= game.category.join(', ') %></p>
-        <p><strong>Mans viedoklis:</strong> <%= game.review %></p>
+          <% if (game.category && game.category.length>0) { %><%=
+              game.category.join(', ') %><% } else { %>Nav norādītas<% } %>
+      </p>
+      <% if (game.location) { %><p><strong>Atrašanās vieta:</strong> <%= game.location %></p><% } %>
+      <% if (game.components && game.components.length>0) { %><p><strong>Komponentes:</strong> <%= game.components.join(' , ') %></p><% } %>
+      <% if (game.review) { %><p><strong>Mans viedoklis:</strong> <%= game.review %></p><% } %>
 
-        <a onclick="window.history.back()" class="btn btn-custom mt-3">⬅ Atpakaļ</a>
-      </div>
+      <a onclick="window.history.back()" class="btn btn-custom mt-3">⬅ Atpakaļ</a>
+
+      <% if (isAdmin) { %>
+        <hr>
+        <h4>Rediģēt spēli</h4>
+        <form action="/game/<%= game._id %>/edit" method="POST">
+          <div class="mb-2">
+            <label>Nosaukums</label>
+            <input type="text" name="title" class="form-control" value="<%= game.title %>">
+          </div>
+          <div class="mb-2">
+            <label>Apakšvirsraksts</label>
+            <input type="text" name="subtitle" class="form-control" value="<%= game.subtitle %>">
+          </div>
+          <div class="mb-2">
+            <label>Apraksts</label>
+            <textarea name="description" class="form-control"><%= game.description %></textarea>
+          </div>
+          <div class="mb-2">
+            <label>Min/Max spēlētāji</label>
+            <input type="number" name="minPlayers" class="form-control" value="<%= game.minPlayers %>">
+            <input type="number" name="maxPlayers" class="form-control" value="<%= game.maxPlayers %>">
+          </div>
+          <div class="mb-2">
+            <label>Min/Max ilgums (min)</label>
+            <input type="number" name="minDuration" class="form-control" value="<%= game.minDuration %>">
+            <input type="number" name="maxDuration" class="form-control" value="<%= game.maxDuration %>">
+          </div>
+          <div class="mb-2">
+            <label>Min/Max vecums</label>
+            <input type="number" name="minAge" class="form-control" value="<%= game.minAge %>">
+            <input type="number" name="maxAge" class="form-control" value="<%= game.maxAge %>">
+          </div>
+          <div class="mb-2">
+            <label>Kategorijas (komata atdalītas)</label>
+            <input type="text" name="category" class="form-control" value="<%= game.category.join(' , ') %>">
+          </div>
+          <div class="mb-2">
+            <label>Atrašanās vieta</label>
+            <input type="text" name="location" class="form-control" value="<%= game.location %>">
+          </div>
+          <div class="mb-2">
+            <label>Komponentes (komata atdalītas)</label>
+            <input type="text" name="components" class="form-control" value="<%= game.components.join(' , ') %>">
+          </div>
+          <div class="mb-2">
+            <label>Mans viedoklis</label>
+            <textarea name="review" class="form-control"><%= game.review %></textarea>
+          </div>
+          <button type="submit" class="btn btn-success mt-2">Saglabāt izmaiņas</button>
+        </form>
+      <% } %>
     </div>
   </div>
+</div>
 
 <%- include('partials/footer') %>
