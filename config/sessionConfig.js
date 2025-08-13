@@ -2,7 +2,7 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 
 export function createSessionMiddleware(mongoUri, secret) {
-  if (!mongoUri) throw new Error("MONGO_URI is required for sessions");
+  if (!mongoUri) throw new Error("MONGODB_URI is required for sessions");
   if (!secret) throw new Error("SESSION_SECRET is required for sessions");
 
   return session({

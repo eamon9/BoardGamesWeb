@@ -25,7 +25,7 @@ const app = express();
 
 // Pārbauda, vai .env mainīgais ir ielādēts
 if (!process.env.MONGODB_URI) {
-  console.error("❌ MONGO_URI nav iestatīts .env failā!");
+  console.error("❌ MONGODB_URI nav iestatīts .env failā!");
   process.exit(1);
 }
 
