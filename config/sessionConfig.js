@@ -11,11 +11,15 @@ export const createSessionMiddleware = () => {
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URI,
       collectionName: "sessions",
+      ttl: 24 * 60 * 60,
     }),
     cookie: {
-      secure: process.env.NODE_ENV === "production", // HTTPS tikai prod vidē
-      maxAge: 24 * 60 * 60 * 1000, // 1 diena
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      httpOnly: true,
+      // Omit domain unless you need cross-subdomain access
+      domain: undefined,
     },
   });
 };

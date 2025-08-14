@@ -10,33 +10,35 @@ router.get("/login", (req, res) => {
 
 router.post("/login", async (req, res) => {
   const {username, password} = req.body;
-  const user = await User.findOne({username});
 
-  if (!user) {
-    req.flash("error", "Nepareizs lietotājvārds vai parole");
-    return res.redirect("/auth/login");
+  try {
+    const user = await User.findOne({username});
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      req.flash("error", "Nepareizs lietotājvārds vai parole");
+      return res.redirect("/auth/login");
+    }
+
+    req.session.user = {
+      id: user._id,
+      username: user.username,
+      isAdmin: user.isAdmin,
+    };
+
+    // Explicitly save session
+    req.session.save((err) => {
+      if (err) {
+        console.error("Session save error:", err);
+        req.flash("error", "Pieslēgšanās kļūda");
+        return res.redirect("/auth/login");
+      }
+      return res.redirect("/");
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    req.flash("error", "Servera kļūda");
+    res.redirect("/auth/login");
   }
-
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) {
-    req.flash("error", "Nepareizs lietotājvārds vai parole");
-    return res.redirect("/auth/login");
-  }
-
-  // Admin check (ja vajadzīgs)
-  if (!user.isAdmin) {
-    req.flash("error", "Nav administrācijas piekļuves");
-    return res.redirect("/auth/login");
-  }
-
-  req.session.user = {
-    id: user._id,
-    username: user.username,
-    isAdmin: user.isAdmin,
-  };
-
-  req.flash("success", "Veiksmīgi pieslēdzies");
-  res.redirect("/");
 });
 
 router.get("/logout", (req, res) => {

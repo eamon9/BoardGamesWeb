@@ -28,6 +28,7 @@ console.log("✅ MongoDB connected");
 // Middleware
 const sessionMiddleware = createSessionMiddleware();
 app.use(sessionMiddleware);
+
 app.use(flash());
 
 // Flash un user objekta pievienošana visiem view
@@ -57,6 +58,15 @@ app.set("views", path.join(__dirname, "views"));
 
 // Mājaslapa
 app.get("/", (req, res) => res.render("index"));
+
+// Route for debugging
+app.get("/session-check", (req, res) => {
+  res.json({
+    session: req.session,
+    cookies: req.cookies,
+    headers: req.headers,
+  });
+});
 
 // Serveris
 const PORT = process.env.PORT || 3000;
