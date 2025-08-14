@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const createSessionMiddleware = () => {
+  const isProd = process.env.NODE_ENV === "production";
   return session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -14,12 +15,10 @@ export const createSessionMiddleware = () => {
       ttl: 24 * 60 * 60,
     }),
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: isProd,
       maxAge: 24 * 60 * 60 * 1000,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: isProd ? "none" : "lax",
       httpOnly: true,
-      // Omit domain unless you need cross-subdomain access
-      domain: undefined,
     },
   });
 };
