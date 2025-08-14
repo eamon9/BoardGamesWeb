@@ -36,7 +36,7 @@ router.post("/login", async (req, res) => {
   };
 
   req.flash("success", "Veiksmīgi pieslēdzies");
-  res.redirect("/admin");
+  res.redirect("/");
 });
 
 router.get("/logout", (req, res) => {

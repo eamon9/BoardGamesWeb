@@ -178,7 +178,7 @@
       </p>
       <% if (game.location) { %><p><strong>Atrašanās vieta:</strong> <%= game.location %></p><% } %>
       <% if (game.components && game.components.length>0) { %><p><strong>Komponentes:</strong> <%= game.components.join(' , ') %></p><% } %>
-      <% if (game.review) { %><p><strong>Mans viedoklis:</strong> <%= game.review %></p><% } %>
+      <% if (game.review) { %><p><strong>Komentārs:</strong> <%= game.review %></p><% } %>
 
       <a onclick="window.history.back()" class="btn btn-custom mt-3">⬅ Atpakaļ</a>
 
@@ -226,7 +226,7 @@
             <input type="text" name="components" class="form-control" value="<%= game.components.join(' , ') %>">
           </div>
           <div class="mb-2">
-            <label>Mans viedoklis</label>
+            <label>Papildus komentārs</label>
             <textarea name="review" class="form-control"><%= game.review %></textarea>
           </div>
           <button type="submit" class="btn btn-success mt-2">Saglabāt izmaiņas</button>

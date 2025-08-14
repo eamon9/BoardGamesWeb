@@ -32,8 +32,8 @@ app.use(flash());
 
 // Flash un user objekta pievienošana visiem view
 app.use((req, res, next) => {
-  res.locals.error = req.flash("error"); // kļūdas login
-  res.locals.success = req.flash("success"); // veiksmīgas darbības
+  res.locals.error = req.flash("error")[0];
+  res.locals.success = req.flash("success")[0];
   res.locals.user = req.session.user || null;
   next();
 });
