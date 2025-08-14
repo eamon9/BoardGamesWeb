@@ -36,6 +36,7 @@ app.use((req, res, next) => {
   res.locals.error = req.flash("error")[0];
   res.locals.success = req.flash("success")[0];
   res.locals.user = req.session.user || null;
+  console.log("🔹 res.locals.user:", res.locals.user);
   next();
 });
 
@@ -61,6 +62,7 @@ app.get("/", (req, res) => res.render("index"));
 
 // Route for debugging
 app.get("/session-check", (req, res) => {
+  console.log("🔹 /session-check hit, session:", req.session);
   res.json({
     session: req.session,
     cookies: req.cookies,

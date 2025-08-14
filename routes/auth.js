@@ -10,11 +10,14 @@ router.get("/login", (req, res) => {
 
 router.post("/login", async (req, res) => {
   const {username, password} = req.body;
+  console.log("🔹 Login attempt:", username);
 
   try {
     const user = await User.findOne({username});
+    console.log("🔹 User found in DB:", user);
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
+      console.log("❌ Login failed: wrong credentials");
       req.flash("error", "Nepareizs lietotājvārds vai parole");
       return res.redirect("/auth/login");
     }
@@ -24,18 +27,19 @@ router.post("/login", async (req, res) => {
       username: user.username,
       isAdmin: user.isAdmin,
     };
+    console.log("🔹 Session user set:", req.session.user);
 
-    // Explicitly save session
     req.session.save((err) => {
       if (err) {
-        console.error("Session save error:", err);
+        console.error("❌ Session save error:", err);
         req.flash("error", "Pieslēgšanās kļūda");
         return res.redirect("/auth/login");
       }
+      console.log("✅ Session saved, redirecting...");
       return res.redirect("/");
     });
   } catch (err) {
-    console.error("Login error:", err);
+    console.error("❌ Login error:", err);
     req.flash("error", "Servera kļūda");
     res.redirect("/auth/login");
   }
