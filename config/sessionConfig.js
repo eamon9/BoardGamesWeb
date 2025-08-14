@@ -15,10 +15,10 @@ export const createSessionMiddleware = () => {
       ttl: 24 * 60 * 60,
     }),
     cookie: {
-      secure: isProd,
+      secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000,
-      sameSite: isProd ? "none" : "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       httpOnly: true,
-    },
+    }
   });
 };
