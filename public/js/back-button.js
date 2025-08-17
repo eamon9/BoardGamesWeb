@@ -1,16 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Save scroll position when leaving the main page
+  // Save scroll position and URL with query parameters on main page
   if (window.location.pathname === "/") {
     window.addEventListener("scroll", () => {
       sessionStorage.setItem("scrollPosition", window.scrollY);
     });
+    // Save current URL (including query params like ?search=chess)
+    sessionStorage.setItem("mainPageUrl", window.location.href);
   }
 
   // Handle back button click
   document.querySelectorAll(".btn-back").forEach((button) => {
     button.addEventListener("click", (e) => {
       e.preventDefault(); // Prevent default anchor behavior
-      window.location.href = "/"; // Redirect to main page
+      // Redirect to saved main page URL or fallback to '/'
+      const savedUrl = sessionStorage.getItem("mainPageUrl") || "/";
+      window.location.href = savedUrl;
     });
   });
 
