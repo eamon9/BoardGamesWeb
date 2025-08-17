@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  canRate: {
+    type: Boolean,
+    default: true
+  },
 });
 
 // Password hashing middleware
