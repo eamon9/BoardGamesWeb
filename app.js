@@ -1,20 +1,20 @@
-import dotenv from "dotenv";
+import dotenv from "dotenv"; // Loads environment variables from .env file for configuration
 dotenv.config();
 
-import express from "express";
-import mongoose from "mongoose";
-import path from "path";
-import {fileURLToPath} from "url";
-import flash from "connect-flash";
-import helmet from "helmet";
+import express from "express"; // Web framework for creating the server and handling routes
+import mongoose from "mongoose"; // MongoDB ORM for database interactions
+import path from "path"; // Node.js module for handling file paths
+import {fileURLToPath} from "url"; // Utility to handle file paths in ES modules
+import flash from "connect-flash"; // Middleware for flash messages (e.g., login errors)
+import helmet from "helmet"; // Security middleware for setting secure HTTP headers (e.g., CSP)
 
-import indexRoutes from "./routes/index.js";
-import authRoutes from "./routes/auth.js";
-import adminRoutes from "./routes/admin.js";
-import profileRoutes from "./routes/profile.js";
-import ratingsRoutes from "./routes/ratings.js";
-import {attachUser} from "./middleware/authMiddleware.js";
-import {createSessionMiddleware} from "./config/sessionConfig.js";
+import indexRoutes from "./routes/index.js"; // Routes for the main homepage
+import authRoutes from "./routes/auth.js"; // Routes for user authentication (login/logout)
+import adminRoutes from "./routes/admin.js"; // Routes for admin-specific functionality
+import profileRoutes from "./routes/profile.js"; // Routes for user profile management
+import ratingsRoutes from "./routes/ratings.js"; // Routes for handling game ratings
+import {attachUser} from "./middleware/authMiddleware.js"; // Middleware to attach user data to requests
+import {createSessionMiddleware} from "./config/sessionConfig.js"; // Session middleware for user session management
 
 const app = express();
 
