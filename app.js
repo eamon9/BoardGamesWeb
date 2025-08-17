@@ -40,25 +40,27 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: [
-          "'self'",
-          "https://cdn.jsdelivr.net", // For Bootstrap JS
-        ],
+        scriptSrc: ["'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
         styleSrc: [
           "'self'",
-          "https://cdn.jsdelivr.net", // For Bootstrap CSS
-          "'unsafe-inline'", // For inline styles (Bootstrap)
+          "https://cdn.jsdelivr.net",
+          "https://cdnjs.cloudflare.com",
+          "'unsafe-inline'",
         ],
         imgSrc: [
           "'self'",
           "data:",
           "https://*.onrender.com",
-          "https://images.bauerhosting.com", // Allow images from bauerhosting
+          "https://images.bauerhosting.com",
         ],
         connectSrc: ["'self'"],
-        fontSrc: ["'self'", "https://cdn.jsdelivr.net"],
+        fontSrc: [
+          "'self'",
+          "https://cdn.jsdelivr.net",
+          "https://cdnjs.cloudflare.com",
+        ],
         objectSrc: ["'none'"],
-        upgradeInsecureRequests: [], // Enforce HTTPS
+        upgradeInsecureRequests: [],
       },
     },
   })
