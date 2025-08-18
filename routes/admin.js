@@ -4,23 +4,24 @@ import User from "../models/User.js";
 import Game from "../models/game.js";
 
 const router = express.Router();
-router.use(isAdmin); // All routes in this file require admin
+router.use(isAdmin); // All routes require admin access
 
 // List all users
-// admin.js
 router.get("/users", async (req, res) => {
   try {
-    const users = await User.find().select("-password");
+    const users = await User.find().select("-password").lean();
     res.render("admin/users", {
       users,
-      user: req.session.user // <--- pievienots šeit
+      user: req.session.user,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Server Error");
+    console.error("❌ User list error:", err);
+    req.flash("error", "Servera kļūda");
+    res.redirect("/admin/dashboard");
   }
 });
 
+// Admin dashboard
 router.get("/dashboard", (req, res) => {
   res.render("admin/dashboard", {
     currentPage: "adminDashboard",
@@ -28,72 +29,55 @@ router.get("/dashboard", (req, res) => {
   });
 });
 
-
 // Toggle admin status
 router.post("/users/:id/toggle-admin", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
+    if (!user) {
+      req.flash("error", "Lietotājs nav atrasts");
+      return res.redirect("/admin/users");
+    }
     user.isAdmin = !user.isAdmin;
     await user.save();
+    req.flash("success", `Lietotāja ${user.username} admin status mainīts`);
     res.redirect("/admin/users");
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Server Error");
+    console.error("❌ Toggle admin error:", err);
+    req.flash("error", "Servera kļūda");
+    res.redirect("/admin/users");
   }
 });
 
 // Delete user
 router.post("/users/:id/delete", async (req, res) => {
   try {
-    await User.findByIdAndDelete(req.params.id);
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      req.flash("error", "Lietotājs nav atrasts");
+      return res.redirect("/admin/users");
+    }
+    req.flash("success", `Lietotājs ${user.username} dzēsts`);
     res.redirect("/admin/users");
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Server Error");
+    console.error("❌ User delete error:", err);
+    req.flash("error", "Servera kļūda");
+    res.redirect("/admin/users");
   }
 });
 
 // Manage games
-router.get("/games", isAdmin, async (req, res) => {
+router.get("/games", async (req, res) => {
   try {
-    const games = await Game.find().lean(); // iegūst visas spēles no DB
-    res.render("admin/games", {games, user: req.session.user});
+    const games = await Game.find().lean();
+    res.render("admin/games", {
+      games,
+      user: req.session.user,
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Server Error");
+    console.error("❌ Game list error:", err);
+    req.flash("error", "Servera kļūda");
+    res.redirect("/admin/dashboard");
   }
-});
-
-// Pievienot jaunu vērtējumu
-router.post('/game/:id/ratings/new', async (req, res) => {
-  const { name, score, comment } = req.body;
-  const game = await Game.findById(req.params.id);
-  game.ratings.push({ name, score: parseFloat(score), comment });
-  await game.save();
-  res.redirect(`/game/${game._id}`);
-});
-
-// Rediģēt esošu vērtējumu
-router.post('/game/:id/ratings/:index/edit', async (req, res) => {
-  const { name, score, comment } = req.body;
-  const game = await Game.findById(req.params.id);
-  const idx = parseInt(req.params.index);
-  if (game.ratings[idx]) {
-    game.ratings[idx] = { name, score: parseFloat(score), comment };
-    await game.save();
-  }
-  res.redirect(`/game/${game._id}`);
-});
-
-// Dzēst vērtējumu
-router.get('/game/:id/ratings/:index/delete', async (req, res) => {
-  const game = await Game.findById(req.params.id);
-  const idx = parseInt(req.params.index);
-  if (game.ratings[idx]) {
-    game.ratings.splice(idx, 1);
-    await game.save();
-  }
-  res.redirect(`/game/${game._id}`);
 });
 
 export default router;

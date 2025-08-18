@@ -7,6 +7,7 @@ import path from "path"; // Node.js module for handling file paths
 import {fileURLToPath} from "url"; // Utility to handle file paths in ES modules
 import flash from "connect-flash"; // Middleware for flash messages (e.g., login errors)
 import helmet from "helmet"; // Security middleware for setting secure HTTP headers (e.g., CSP)
+import csrf from "csurf";
 
 import indexRoutes from "./routes/index.js"; // Routes for the main homepage
 import authRoutes from "./routes/auth.js"; // Routes for user authentication (login/logout)
@@ -70,9 +71,11 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(createSessionMiddleware());
 app.use(flash());
+app.use(csrf());
 app.use((req, res, next) => {
-  res.locals.error = req.flash("error")[0];
-  res.locals.success = req.flash("success")[0];
+  res.locals.csrfToken = req.csrfToken();
+  res.locals.error = req.flash("error");
+  res.locals.success = req.flash("success");
   res.locals.user = req.session.user || null;
   next();
 });
@@ -105,8 +108,19 @@ app.get("/session-check", (req, res) => {
 // Error handler
 app.use((err, req, res, next) => {
   console.error("Server error:", err);
-  res.status(500).render("error", {error: "Something went wrong!"});
+
+  let message = "Something went wrong!";
+  if (err.code === "EBADCSRFTOKEN") {
+    message =
+      "Your session expired or form tampered with. Please refresh the page and try again.";
+    res.status(403);
+  } else {
+    res.status(500);
+  }
+
+  res.render("error", {error: message, user: req.session?.user || null});
 });
+
 
 // Server
 const PORT = process.env.PORT || 3000;

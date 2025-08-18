@@ -2,6 +2,7 @@ import express from "express";
 import Game from "../models/game.js";
 import mongoose from "mongoose";
 import { isAdmin } from "../middleware/authMiddleware.js";
+import { ratingUsers } from "../config/users.js";
 
 const router = express.Router();
 
@@ -92,8 +93,10 @@ router.get("/game/:id", async (req, res) => {
 
     res.render("game", {
       game,
+      ratingUsers,
       currentPage: "game",
       isAdmin: req.session.user?.isAdmin || false,
+      csrfToken: req.csrfToken(),
     });
   } catch (err) {
     console.error("Kļūda ielādējot spēli:", err);

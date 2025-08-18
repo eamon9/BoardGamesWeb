@@ -1,9 +1,21 @@
 <%- include('partials/header') %>
-  <div class="container mt-5">
-    <h1>404 - Lapa Nav Atrasta</h1>
-    <p>
-      <%= 'Nederīgs spēles ID formāts' || 'Lapa, ko Jūs vēlaties apmeklēt nav pieejama!' %>
-    </p>
-    <a href="/" class="btn btn-custom">Atpakaļ uz Sākumu</a>
+<div class="container mt-5">
+  <h1>404 - Lapa Nav Atrasta</h1>
+  <p>
+    <% if (error) { %>
+    <%= typeof error==='string' ? error : error.message || JSON.stringify(error) %>
+    <% } else { %>
+    Lapa, ko Jūs vēlaties apmeklēt, nav pieejama!
+    <% } %>
+  </p>
+
+  <% if (locals.error && locals.error.length> 0) { %>
+  <div class="alert alert-danger mt-3">
+    <%= locals.error.join(', ') %>
   </div>
-  <%- include('partials/footer') %>
+  <% } %>
+
+  <a href="/" class="btn btn-custom mt-3">Atpakaļ uz Sākumu</a>
+</div>
+
+<%- include('partials/footer') %>

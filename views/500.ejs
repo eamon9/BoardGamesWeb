@@ -1,13 +1,15 @@
 <%- include('partials/header') %>
-  <div class="container mt-5">
-    <h1>500 - Servera kļūda</h1>
-    <p>Kautkas nogāja greizi mūsu pusē. Lūdzu mēģiniet nedaudz vēlāk.</p>
-    <% if (error) { %>
-      <div class="alert alert-danger mt-3">
-        <strong>Kļūdas info:</strong>
-        <%= error.message %>
-      </div>
-      <% } %>
-        <a href="/" class="btn btn-custom">Atgriezties Sākumlapā</a>
+<div class="container mt-5">
+  <h1>500 - Servera kļūda</h1>
+  <p>Kaut kas nogāja greizi mūsu pusē. Lūdzu mēģiniet vēlāk.</p>
+
+  <% if (error || (typeof error==='undefined' && locals.error && locals.error.length> 0)) { %>
+  <div class="alert alert-danger mt-3">
+    <strong>Kļūdas info:</strong>
+    <%= error ? (typeof error==='string' ? error : error.message || JSON.stringify(error)) : locals.error.join(', ') %>
   </div>
-  <%- include('partials/footer') %>
+  <% } %>
+
+  <a href="/" class="btn btn-custom mt-3">Atgriezties Sākumlapā</a>
+</div>
+<%- include('partials/footer') %>

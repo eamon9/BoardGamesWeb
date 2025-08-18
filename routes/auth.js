@@ -1,16 +1,30 @@
 import express from "express";
-import User from "../models/User.js"; // jūsu User modelis
-import bcrypt from "bcrypt";
+import User from "../models/User.js"; // User model for MongoDB
+import bcrypt from "bcrypt"; // Password hashing
 
 const router = express.Router();
 
 router.get("/login", (req, res) => {
-  res.render("auth/login"); // pieņem, ka EJS login forms
+  req.session.returnTo = req.get("referer") || "/"; // Store referer for redirect
+  res.render("auth/login");
 });
 
 router.post("/login", async (req, res) => {
   const {username, password} = req.body;
   console.log("🔹 Login attempt:", username);
+
+  // Check for existing session
+  if (req.session.user) {
+    console.log("🔹 User already logged in:", req.session.user.username);
+    return res.redirect(req.session.returnTo || "/");
+  }
+
+  // Validate inputs
+  if (!username || !password) {
+    console.log("❌ Login failed: missing credentials");
+    req.flash("error", "Lietotājvārds un parole ir obligāti");
+    return res.redirect("/auth/login");
+  }
 
   try {
     const user = await User.findOne({username});
@@ -36,7 +50,7 @@ router.post("/login", async (req, res) => {
         return res.redirect("/auth/login");
       }
       console.log("✅ Session saved, redirecting...");
-      return res.redirect("/");
+      return res.redirect(req.session.returnTo || "/");
     });
   } catch (err) {
     console.error("❌ Login error:", err);
@@ -47,8 +61,9 @@ router.post("/login", async (req, res) => {
 
 router.get("/logout", (req, res) => {
   req.session.destroy(() => {
-    res.redirect("/");
+    res.clearCookie("connect.sid"); // Clear session cookie
+    return res.redirect("login");
   });
 });
 
-export default router;
+export default router; // Exports router for use in app.js
