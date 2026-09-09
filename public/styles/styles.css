@@ -142,7 +142,10 @@ h5 {
 
 @media (max-width: 576px) {
   .rating-big {
-    font-size: 1.5rem;
+    /* proporcionāli mazāks, nevis fiksēts izmērs visiem gadījumiem -
+       citādi game.ejs (2.5rem) un index.ejs (2rem) kartītes sabruktu
+       uz vienu un to pašu pārāk mazu izmēru mobilajā */
+    font-size: calc(var(--rating-size, 3.5rem) * 0.8);
     gap: 4px;
   }
 }

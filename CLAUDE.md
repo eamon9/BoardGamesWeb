@@ -11,6 +11,7 @@ Note: not related to the separate Grannies-LV-page / vecmaminas.lv project (a di
 - Commit messages: English, imperative mood, no em dash
 - Never run `git commit` (or merge/push) without the user's explicit go-ahead each time, even if a previous message approved a commit. The user does their own commits unless they explicitly ask otherwise for that change.
 - User does not want a `Co-Authored-By: Claude ...` trailer in commit messages. When drafting a message for the user to commit themselves, leave it out. Note: if Claude Code itself ends up running `git commit`, a session-level instruction may still add this trailer regardless of this preference, that's outside this project's control.
+- When asked for "a commit message", it covers only the currently uncommitted changes (`git status`/`git diff` against `HEAD`), not a summary of the whole session or of already-committed work. Check what's actually uncommitted first, don't assume from earlier conversation turns.
 
 ## Running locally
 - `npm run dev` (nodemon, auto-restarts on file changes) or `npm start` / `node app.js` (one-off)
