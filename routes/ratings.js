@@ -85,7 +85,7 @@ router.post(
 );
 
 // Delete rating (admins only)
-router.get("/game/:id/ratings/:index/delete", isAdmin, async (req, res) => {
+router.post("/game/:id/ratings/:index/delete", isAdmin, async (req, res) => {
   try {
     const game = await Game.findById(req.params.id);
     if (!game) {

@@ -1,6 +1,11 @@
 import express from "express";
 import User from "../models/User.js"; // User model for MongoDB
 import bcrypt from "bcrypt"; // Password hashing
+import {
+  loginRateLimiter,
+  recordFailedAttempt,
+  clearAttempts,
+} from "../middleware/loginRateLimiter.js";
 
 const router = express.Router();
 
@@ -9,39 +14,36 @@ router.get("/login", (req, res) => {
   res.render("auth/login");
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", loginRateLimiter, async (req, res) => {
   const {username, password} = req.body;
-  console.log("🔹 Login attempt:", username);
 
   // Check for existing session
   if (req.session.user) {
-    console.log("🔹 User already logged in:", req.session.user.username);
     return res.redirect(req.session.returnTo || "/");
   }
 
   // Validate inputs
   if (!username || !password) {
-    console.log("❌ Login failed: missing credentials");
     req.flash("error", "Lietotājvārds un parole ir obligāti");
     return res.redirect("/auth/login");
   }
 
   try {
     const user = await User.findOne({username});
-    console.log("🔹 User found in DB:", user);
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      console.log("❌ Login failed: wrong credentials");
+      recordFailedAttempt(req._rateLimitKey);
       req.flash("error", "Nepareizs lietotājvārds vai parole");
       return res.redirect("/auth/login");
     }
+
+    clearAttempts(req._rateLimitKey);
 
     req.session.user = {
       id: user._id,
       username: user.username,
       isAdmin: user.isAdmin,
     };
-    console.log("🔹 Session user set:", req.session.user);
 
     req.session.save((err) => {
       if (err) {
@@ -49,7 +51,6 @@ router.post("/login", async (req, res) => {
         req.flash("error", "Pieslēgšanās kļūda");
         return res.redirect("/auth/login");
       }
-      console.log("✅ Session saved, redirecting...");
       return res.redirect(req.session.returnTo || "/");
     });
   } catch (err) {

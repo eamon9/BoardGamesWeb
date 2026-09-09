@@ -7,3 +7,6 @@ images/*
 
 .env
 todo.todo
+
+.DS_Store
+.vscode/

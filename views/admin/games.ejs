@@ -1,0 +1,44 @@
+<%- include('../partials/header') %>
+  <div class="container mt-5">
+    <h1>Game Management</h1>
+
+    <table class="table table-striped mt-4">
+      <thead>
+        <tr>
+          <th>Nosaukums</th>
+          <th>Kategorijas</th>
+          <th>Spēlētāji</th>
+          <th>Vērtējumu skaits</th>
+          <th>Darbības</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% games.forEach(game=> { %>
+          <tr>
+            <td>
+              <%= game.title %>
+            </td>
+            <td>
+              <%= (game.category && game.category.length) ? game.category.join(', ') : '-' %>
+            </td>
+            <td>
+              <% if (game.minPlayers && game.maxPlayers) { %>
+                <%= game.minPlayers === game.maxPlayers ? game.minPlayers : `${game.minPlayers}-${game.maxPlayers}` %>
+              <% } else { %>
+                ?
+              <% } %>
+            </td>
+            <td>
+              <%= game.ratings ? game.ratings.length : 0 %>
+            </td>
+            <td>
+              <a href="/game/<%= game._id %>" class="btn btn-sm btn-primary">Atvērt / Rediģēt</a>
+            </td>
+          </tr>
+          <% }) %>
+      </tbody>
+    </table>
+
+    <a href="/admin/dashboard" class="btn btn-secondary mt-3">Back to Dashboard</a>
+  </div>
+  <%- include('../partials/footer') %>
