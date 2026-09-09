@@ -25,13 +25,15 @@
                 const halfDice = (avg - fullDice) >= 0.5 ? 1 : 0;
                 const emptyDice = 5 - fullDice - halfDice;
                 %>
-      <div class="rating-big text-center mb-4" style="font-size: 2.5rem;">
-        <% for(let i=0; i < fullDice; i++) { %><span class="mx-1">🎲</span>
-        <% } %>
-        <% if(halfDice) { %><span class="mx-1" style="opacity: 0.5;">🎲</span>
-        <% } %>
-        <% for(let i=0; i < emptyDice; i++) { %><span class="mx-1" style="opacity: 0.2;">🎲</span>
-        <% } %>
+      <div class="rating-big text-center mb-4" style="--rating-size: 2.5rem;">
+        <span class="dice-row">
+          <% for(let i=0; i < fullDice; i++) { %><span>🎲</span>
+          <% } %>
+          <% if(halfDice) { %><span style="opacity: 0.5;">🎲</span>
+          <% } %>
+          <% for(let i=0; i < emptyDice; i++) { %><span style="opacity: 0.2;">🎲</span>
+          <% } %>
+        </span>
         <div class="mt-2" style="font-size: 1.5rem;">
           (<%= avg.toFixed(1) %>/5 no <%= game.ratings.length %> vērtējumiem)
         </div>
@@ -57,12 +59,14 @@
                 <%= rating.name %>
               </strong>
               <span style="font-size: 1.2rem;">
-                <% for(let i=0; i < full; i++) { %><span>🎲</span>
-                <% } %>
-                <% if(half) { %><span style="opacity: 0.5;">🎲</span>
-                <% } %>
-                <% for(let i=0; i < empty; i++) { %><span style="opacity: 0.2;">🎲</span>
-                <% } %>
+                <span class="dice-row">
+                  <% for(let i=0; i < full; i++) { %><span>🎲</span>
+                  <% } %>
+                  <% if(half) { %><span style="opacity: 0.5;">🎲</span>
+                  <% } %>
+                  <% for(let i=0; i < empty; i++) { %><span style="opacity: 0.2;">🎲</span>
+                  <% } %>
+                </span>
                 (<%= rating.score %>/5)
               </span>
             </div>

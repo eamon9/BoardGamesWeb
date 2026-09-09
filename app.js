@@ -8,6 +8,7 @@ import {fileURLToPath} from "url"; // Utility to handle file paths in ES modules
 import flash from "connect-flash"; // Middleware for flash messages (e.g., login errors)
 import helmet from "helmet"; // Security middleware for setting secure HTTP headers (e.g., CSP)
 import csrf from "csurf";
+import {execSync} from "child_process"; // Used only to read the git commit hash for the version footer
 
 import indexRoutes from "./routes/index.js"; // Routes for the main homepage
 import authRoutes from "./routes/auth.js"; // Routes for user authentication (login/logout)
@@ -22,6 +23,21 @@ const app = express();
 // ESM __dirname setup
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// App version shown in the footer, so we can tell at a glance whether a
+// deploy actually went live. Render sets RENDER_GIT_COMMIT automatically;
+// locally we fall back to reading the current git commit ourselves.
+const appVersion =
+  process.env.RENDER_GIT_COMMIT?.slice(0, 7) ||
+  (() => {
+    try {
+      return execSync("git rev-parse --short HEAD", {cwd: __dirname})
+        .toString()
+        .trim();
+    } catch {
+      return "dev";
+    }
+  })();
 
 // MongoDB connection
 try {
@@ -83,6 +99,7 @@ app.use((req, res, next) => {
   res.locals.error = req.flash("error");
   res.locals.success = req.flash("success");
   res.locals.user = req.session.user || null;
+  res.locals.appVersion = appVersion;
   next();
 });
 app.use(attachUser);

@@ -75,23 +75,25 @@
                     <% } %>
 
                       <% if (game.ratings && game.ratings.length> 0) { %>
-                        <div class="rating-big" style="font-size: 2rem;">
-                          <% for (let i=0; i < fullDice; i++) { %>
-                            <span>🎲</span>
-                            <% } %>
-                              <% if (halfDice) { %>
-                                <span style="opacity: 0.5;">🎲</span>
-                                <% } %>
-                                  <% for (let i=0; i < emptyDice; i++) { %>
-                                    <span style="opacity: 0.2;">🎲</span>
-                                    <% } %>
-                                      <span class="ms-2 text-muted" style="font-size: 2rem;">
-                                        (<%= avg.toFixed(1) %>/5)
-                                      </span>
+                        <div class="rating-big" style="--rating-size: 2rem;">
+                          <span class="dice-row">
+                            <% for (let i=0; i < fullDice; i++) { %>
+                              <span>🎲</span>
+                              <% } %>
+                                <% if (halfDice) { %>
+                                  <span style="opacity: 0.5;">🎲</span>
+                                  <% } %>
+                                    <% for (let i=0; i < emptyDice; i++) { %>
+                                      <span style="opacity: 0.2;">🎲</span>
+                                      <% } %>
+                          </span>
+                          <span class="ms-2 text-muted" style="font-size: 2rem;">
+                            (<%= avg.toFixed(1) %>/5)
+                          </span>
                         </div>
                         <% } else { %>
-                          <div class="rating-big" style="font-size: 2rem; opacity: 0.3;">
-                            <span>🎲🎲🎲🎲🎲</span>
+                          <div class="rating-big" style="--rating-size: 2rem; opacity: 0.3;">
+                            <span class="dice-row">🎲🎲🎲🎲🎲</span>
                             <span class="ms-2">(-/5)</span>
                           </div>
                           <% } %>

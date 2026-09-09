@@ -129,11 +129,22 @@ h5 {
 /* RATING BIG */
 .rating-big {
   display: flex;
+  flex-wrap: wrap; /* neļauj kauliņiem un tekstam iet pāri malām šaurā ekrānā */
   justify-content: center; /* Centrs horizontāli */
   align-items: center;
   gap: 10px; /* Atstarpe starp kauliņiem */
-  font-size: 3.5rem; /* Lielāks izmērs */
+  /* --rating-size tiek iestatīts inline katrā view (game.ejs/index.ejs),
+     lai varētu pārrakstīt mobilajā media query zemāk, kas nebūtu iespējams
+     ar tiešu inline font-size (tas uzvarētu pār jebkuru stylesheet likumu) */
+  font-size: var(--rating-size, 3.5rem);
   margin-bottom: 0.5rem;
+}
+
+@media (max-width: 576px) {
+  .rating-big {
+    font-size: 1.5rem;
+    gap: 4px;
+  }
 }
 
 .rating-big span.half {
@@ -142,6 +153,16 @@ h5 {
 
 .rating-big span.empty {
   opacity: 0.2;
+}
+
+/* DICE ROW - wraps a set of dice (full/half/empty) so the gap between
+   them is always consistent and they never get split across lines
+   because of stray whitespace between the EJS-generated spans. */
+.dice-row {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 4px;
 }
 
 /* RATING small */
@@ -179,4 +200,33 @@ h5 {
 /* Dropdown aktīvajam elementam */
 .navbar-dark .navbar-nav .dropdown-toggle.active {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* FOOTER SIGNATURE - diskrēta, moderna "izstrādātāja" saite footerī */
+.footer-signature {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.footer-signature:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.footer-signature i {
+  font-size: 0.8em;
+  opacity: 0.8;
+}
+
+.footer-signature__accent {
+  font-weight: 600;
 }
