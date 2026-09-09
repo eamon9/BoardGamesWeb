@@ -73,6 +73,14 @@
 - [ ] UI: poga pie spēles "Atzīmēt kā spēlētu" -> ātra forma
 - [ ] Vēlāk: statistikas lapa (populārākās spēles, pēdējoreiz spēlēts, kopējais spēlēšanas laiks) - šis balstās uz šo datu bāzi, tāpēc datu struktūra jāizdomā pareizi jau tagad, lai vēlāk nav jāmigrē
 
+### 8. "Manas vērtētās spēles" - pārskatāms saraksts (2026-09-10)
+Ideja: lapa/sadaļa, kur lietotājs var redzēt VISAS spēles, kurām viņš ir devis vērtējumu, vienuviet, ļoti labi pārskatāmā veidā (nevis jāmeklē pa katru spēli atsevišķi).
+- [ ] Jauna route, piem. `/profile/ratings` vai poga profila lapā "Manas vērtētās spēles"
+- [ ] Query: `Game.find({"ratings.userId": lietotāja ID})`, ar katras spēles nosaukumu/attēlu + paša doto vērtējumu/komentāru tajā pašā rindā
+- [ ] Kārtošana: pēc vērtējuma (augstākais/zemākais), pēc nosaukuma, vai pēc pievienošanas datuma (ja rating dabū savu `createdAt` lauku, kura šobrīd nav - jāpievieno)
+- [ ] Dizains: kartīšu/saraksta skats līdzīgs sākumlapai, bet ar uzsvaru uz paša vērtējumu (redzams uzreiz, nevis jāatver katra spēle), varbūt arī ātra saite "labot vērtējumu" tieši no šī saraksta
+- [ ] Var paplašināt vēlāk ar filtriem (piem. "spēles, ko vēl neesmu vērtējis")
+
 ## Manis ieteiktais (lai atbilst mūsdienu standartiem)
 - [ ] **Attēlu glabātuve mākonī** (Cloudinary/Backblaze B2/S3) - jau tagad 17MB repo, ar admin image upload + multi-image tas augs strauji. Git repo nav domāts bināru failu glabāšanai šādā apjomā, un Render build laiks/repo izmērs cietīs. Šis kļūst obligāts, tiklīdz taisa 4./5. punktu.
 - [ ] **Testi** - šobrīd `npm test` ir tukšs stub. Vismaz pamata integration testi kritiskajiem flow (login, rating add/delete, admin CRUD)
