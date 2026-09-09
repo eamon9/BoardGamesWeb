@@ -25,25 +25,26 @@ Note: not related to the separate Grannies-LV-page / vecmaminas.lv project (a di
 
 ## Current state (2026-09-09)
 
-### Fixed (patch not yet applied to this checkout, see below)
+### Fixed (applied on main, commits e0e400c/1ace289/fe6823f/1f0d3e1/5fad0c9)
 - `views/admin/games.ejs` - missing view was causing a 500 error, now created, dashboard card uncommented
 - `views/admin/users.ejs` - added missing `_csrf` inputs in toggle-admin/delete forms (without it, 403)
 - `routes/ratings.js` + `views/game.ejs` - rating delete changed from GET link to POST form with CSRF
 - `routes/auth.js` - removed sensitive console.log (full user object with password hash in logs)
 - `middleware/loginRateLimiter.js` (new) - brute force protection on login (5 attempts/10min)
 - `createUser.js` - no more hardcoded password, now `node createUser.js <username> <password> [--admin]`
+- `.DS_Store`/`.vscode` untracked, added to `.gitignore`
+- MongoDB Atlas password rotated (old one had been exposed), updated in local `.env` and Render env vars, confirmed live and working
 
 ### Known, not fixed
 - `config/db.js` - unused duplicate (app.js connects to Mongo itself)
 - No create/delete game admin routes, only edit via `/game/:id`
-- Old password `toms`/`toms` was in the public repo, rotate it in the real DB if not done yet
 - CSS `body { font-size: 1.5rem }` seems too large globally, check on mobile
 
 ### Next steps (in the order the user chose)
-1. Critical bugs - DONE (see patch)
-2. Security - DONE (see patch)
-3. **Render sleep fix** - not started. Options: cron-job.dev/UptimeRobot ping every 10-14 min, or migrate to Fly.io/Railway
-4. Code cleanup (dead code, CSS review)
+1. Critical bugs - DONE
+2. Security - DONE (bugfixes/CSRF/rate limiting + Mongo password rotation)
+3. Render sleep fix - DONE, UptimeRobot monitor set up pinging the Render URL every 5 min
+4. **Code cleanup** - not started (dead code, CSS review, see "Known, not fixed" above)
 
 ## Big picture: SaaS pivot
 Idea: turn this from a single family app into a multi-tenant SaaS where anyone can create their own library, goal is to cover server costs, not to make a profit.
