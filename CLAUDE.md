@@ -1,6 +1,8 @@
-# BoardGamesWeb (vecmaminas.lv / Grannies-LV)
+# BoardGamesWeb
 
 Family board game library website. Repo: `eamon9/BoardGamesWeb`.
+
+Note: not related to the separate Grannies-LV-page / vecmaminas.lv project (a different repo). An earlier session's CLAUDE.md incorrectly conflated the two, that reference has been removed.
 
 ## Conventions
 - Conversation with the user happens in Latvian, but all code, comments, commit messages, and actions are in English
