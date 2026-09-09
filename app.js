@@ -25,19 +25,24 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // App version shown in the footer, so we can tell at a glance whether a
-// deploy actually went live. Render sets RENDER_GIT_COMMIT automatically;
-// locally we fall back to reading the current git commit ourselves.
-const appVersion =
-  process.env.RENDER_GIT_COMMIT?.slice(0, 7) ||
-  (() => {
-    try {
-      return execSync("git rev-parse --short HEAD", {cwd: __dirname})
-        .toString()
-        .trim();
-    } catch {
-      return "dev";
-    }
-  })();
+// deploy actually went live. Render sets RENDER_GIT_COMMIT automatically
+// and restarts the process on every deploy, so reading it once at startup
+// is always correct there. Locally there's no restart-on-commit, so we
+// read the current git commit fresh on every request instead, otherwise
+// the footer would keep showing a stale hash until the dev server is
+// manually restarted.
+function getAppVersion() {
+  if (process.env.RENDER_GIT_COMMIT) {
+    return process.env.RENDER_GIT_COMMIT.slice(0, 7);
+  }
+  try {
+    return execSync("git rev-parse --short HEAD", {cwd: __dirname})
+      .toString()
+      .trim();
+  } catch {
+    return "dev";
+  }
+}
 
 // MongoDB connection
 try {
@@ -99,7 +104,7 @@ app.use((req, res, next) => {
   res.locals.error = req.flash("error");
   res.locals.success = req.flash("success");
   res.locals.user = req.session.user || null;
-  res.locals.appVersion = appVersion;
+  res.locals.appVersion = getAppVersion();
   next();
 });
 app.use(attachUser);
