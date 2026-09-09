@@ -9,6 +9,7 @@ Note: not related to the separate Grannies-LV-page / vecmaminas.lv project (a di
 - UI text and flash messages in the app itself stay Latvian (existing convention, don't change)
 - Never use em dash (-) in any output, use a regular hyphen (-) only
 - Commit messages: English, imperative mood, no em dash
+- Never run `git commit` (or merge/push) without the user's explicit go-ahead each time, even if a previous message approved a commit. The user does their own commits unless they explicitly ask otherwise for that change.
 
 ## Tech stack
 - Node.js + Express 5, ES modules (`type: module`)
