@@ -1,5 +1,5 @@
 // createOrUpdateUser.js
-// Lietošana: node createUser.js <username> <password> [--admin]
+// Lietošana: node createUser.js <username> <password> [--admin] [--name="Attēlotais vārds"]
 // Parole vairs netiek glabāta kodā - tas ir svarīgi, jo šis repo ir publisks.
 
 import dotenv from "dotenv";
@@ -12,9 +12,13 @@ import User from "./models/User.js";
 async function createOrUpdateUser() {
   const [username, plainPassword, ...flags] = process.argv.slice(2);
   const isAdmin = flags.includes("--admin");
+  const nameFlag = flags.find((f) => f.startsWith("--name="));
+  const displayName = nameFlag ? nameFlag.slice("--name=".length) : undefined;
 
   if (!username || !plainPassword) {
-    console.error("❌ Lietošana: node createUser.js <username> <password> [--admin]");
+    console.error(
+      '❌ Lietošana: node createUser.js <username> <password> [--admin] [--name="Attēlotais vārds"]'
+    );
     process.exit(1);
   }
 
@@ -34,6 +38,7 @@ async function createOrUpdateUser() {
       password: hashedPassword,
       isAdmin,
       canRate: true,
+      ...(displayName ? {displayName} : {}),
     };
 
     const result = await User.updateOne(

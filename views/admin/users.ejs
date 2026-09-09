@@ -2,19 +2,62 @@
   <div class="container mt-5">
     <h1>User Management</h1>
 
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Izveidot jaunu lietotāju</h5>
+        <form action="/admin/users/new" method="POST" class="row g-2 align-items-end">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="col-md-3">
+            <label class="form-label">Lietotājvārds</label>
+            <input type="text" name="username" class="form-control" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Attēlotais vārds</label>
+            <input type="text" name="displayName" class="form-control" placeholder="piem. Imants">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Pagaidu parole</label>
+            <input type="text" name="password" class="form-control" required minlength="6">
+          </div>
+          <div class="col-md-2 form-check ms-2">
+            <input type="checkbox" name="isAdmin" class="form-check-input" id="newUserIsAdmin">
+            <label class="form-check-label" for="newUserIsAdmin">Admin</label>
+          </div>
+          <div class="col-md-1">
+            <button type="submit" class="btn btn-primary w-100">Izveidot</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <table class="table table-striped mt-4">
       <thead>
         <tr>
           <th>Username</th>
+          <th>Attēlotais vārds</th>
           <th>Admin Status</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         <% users.forEach(user=> { %>
+          <% const editFormId = 'editUser-' + user._id; %>
           <tr>
             <td>
-              <%= user.username %>
+              <!-- Tukšs forms elements tikai CSRF tokenam - pārējie
+                   redzamie lauki (šajā un citos <td>) pievienoti šai
+                   formai ar form="<%= editFormId %>", jo <form> nedrīkst
+                   aptvert vairākus <td> tieši. -->
+              <form id="<%= editFormId %>" action="/admin/users/<%= user._id %>/edit" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              </form>
+              <input type="text" name="username" form="<%= editFormId %>" class="form-control form-control-sm" value="<%= user.username %>" required style="min-width: 120px;">
+              <% if (user.passwordTemporary) { %>
+                <span class="badge bg-warning text-dark ms-1" title="Lietotājam ir admina uzliktā pagaidu parole">pagaidu parole</span>
+                <% } %>
+            </td>
+            <td>
+              <input type="text" name="displayName" form="<%= editFormId %>" class="form-control form-control-sm" value="<%= user.displayName || '' %>" placeholder="piem. Imants" style="min-width: 120px;">
             </td>
             <td>
               <% if (user.isAdmin) { %>
@@ -24,11 +67,17 @@
                   <% } %>
             </td>
             <td>
+              <button type="submit" form="<%= editFormId %>" class="btn btn-sm btn-outline-primary me-2">Saglabāt vārdu</button>
               <form action="/admin/users/<%= user._id %>/toggle-admin" method="POST" class="d-inline">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <button type="submit" class="btn btn-sm btn-warning me-2">
                   <%= user.isAdmin ? 'Remove Admin' : 'Make Admin' %>
                 </button>
+              </form>
+              <form action="/admin/users/<%= user._id %>/reset-password" method="POST" class="d-inline-flex gap-1 align-items-center me-2">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="text" name="password" class="form-control form-control-sm" style="width: 140px;" placeholder="Jauna parole" required minlength="6">
+                <button type="submit" class="btn btn-sm btn-secondary">Atiestatīt</button>
               </form>
               <form action="/admin/users/<%= user._id %>/delete" method="POST" class="d-inline">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">

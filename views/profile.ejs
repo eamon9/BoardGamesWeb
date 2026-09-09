@@ -1,9 +1,60 @@
 <%- include('partials/header') %>
-  <div class="container mt-5">
-    <h1>Profils</h1>
-    <p>Lietotājvārds: <%= user.username %>
-    </p>
-    <p>Email: <%= user.email %>
-    </p>
+<div class="container mt-5">
+  <h1>Profils</h1>
+
+  <% if (profileUser.passwordTemporary) { %>
+  <div class="alert alert-warning">
+    Tev ir uzlikta pagaidu parole. Ieteicams (bet nav obligāti) to nomainīt zemāk.
   </div>
-  <%- include('partials/footer') %>
+  <% } %>
+
+  <p>Lietotājvārds: <strong><%= profileUser.username %></strong></p>
+  <p>Attēlotais vārds: <strong><%= profileUser.displayName || profileUser.username %></strong></p>
+  <% const ageLabel = profileUser.getAgeLabel(); %>
+  <% if (ageLabel) { %>
+  <p>Vecums: <strong><%= ageLabel %></strong></p>
+  <% } %>
+
+  <div class="card mb-4 mt-4">
+    <div class="card-body">
+      <h5 class="card-title">Dzimšanas datums</h5>
+      <p class="text-muted">Izmanto, lai vecums vērtējumos vienmēr rādītos aktuāls.</p>
+      <form action="/profile/birthdate" method="POST" class="row g-2 align-items-end">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="col-auto">
+          <input
+            type="date"
+            name="birthDate"
+            class="form-control"
+            value="<%= profileUser.birthDate ? profileUser.birthDate.toISOString().slice(0, 10) : '' %>"
+            required
+          >
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary">Saglabāt</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Nomainīt paroli</h5>
+      <form action="/profile/change-password" method="POST" class="row g-2 align-items-end">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="col-auto">
+          <label class="form-label">Pašreizējā parole</label>
+          <input type="password" name="currentPassword" class="form-control" required>
+        </div>
+        <div class="col-auto">
+          <label class="form-label">Jaunā parole</label>
+          <input type="password" name="newPassword" class="form-control" required minlength="6">
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary">Nomainīt</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('partials/footer') %>

@@ -2,7 +2,7 @@ import express from "express";
 import Game from "../models/game.js";
 import mongoose from "mongoose";
 import { isAdmin } from "../middleware/authMiddleware.js";
-import { ratingUsers } from "../config/users.js";
+import { getAgeLabel } from "../models/User.js";
 
 const router = express.Router();
 
@@ -76,7 +76,9 @@ router.get("/game/:id", async (req, res) => {
         .render("404", {message: "Nepareizs spēles ID formāts"});
     }
 
-    const game = await Game.findById(req.params.id).lean();
+    const game = await Game.findById(req.params.id)
+      .populate("ratings.userId", "displayName username birthDate")
+      .lean();
     if (!game) {
       return res.status(404).render("404", {message: "Spēle nav atrasta"});
     }
@@ -88,12 +90,21 @@ router.get("/game/:id", async (req, res) => {
           game.ratings.length
         : 0;
 
-    // Pārbaudi, vai lietotājs ir admins (piemērs ar sesiju)
-    const isAdmin = req.session.user && req.session.user.role === "admin";
+    // Ja vērtējums ir saistīts ar reālu kontu, rādām tā aktuālo vārdu un
+    // no dzimšanas datuma aprēķinātu vecumu, nevis "iesaldēto" name lauku
+    // (vecajiem, vēl nesaistītajiem vērtējumiem name paliek kā ir).
+    game.ratings = (game.ratings || []).map((rating) => {
+      const account = rating.userId;
+      if (!account) return rating;
+      return {
+        ...rating,
+        name: account.displayName || account.username || rating.name,
+        ageLabel: getAgeLabel(account.birthDate),
+      };
+    });
 
     res.render("game", {
       game,
-      ratingUsers,
       currentPage: "game",
       isAdmin: req.session.user?.isAdmin || false,
       csrfToken: req.csrfToken(),

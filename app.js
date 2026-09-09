@@ -98,13 +98,21 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(createSessionMiddleware());
 app.use(flash());
+// Set before csrf(): the footer (included on every page, error pages too)
+// reads appVersion, so it must be available even when csrf() itself
+// throws (invalid/expired token) and jumps straight to the error handler,
+// otherwise rendering the error page crashes a second time on a missing
+// variable and leaks a raw Node stack trace to the browser.
+app.use((req, res, next) => {
+  res.locals.appVersion = getAppVersion();
+  next();
+});
 app.use(csrf());
 app.use((req, res, next) => {
   res.locals.csrfToken = req.csrfToken();
   res.locals.error = req.flash("error");
   res.locals.success = req.flash("success");
   res.locals.user = req.session.user || null;
-  res.locals.appVersion = getAppVersion();
   next();
 });
 app.use(attachUser);

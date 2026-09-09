@@ -4,6 +4,10 @@ const ratingSchema = new mongoose.Schema({
   name: {type: String, required: true},
   score: {type: Number, min: 1, max: 5, required: true},
   comment: {type: String},
+  // Piesaista vērtējumu reālam lietotāja kontam. Optional, jo vecie
+  // vērtējumi (pirms konta sistēmas) to nesatur - skat.
+  // scripts/migrateRatingsToUsers.js, kas mēģina tos sasaistīt pēc vārda.
+  userId: {type: mongoose.Schema.Types.ObjectId, ref: "User"},
 });
 
 const gameSchema = new mongoose.Schema({

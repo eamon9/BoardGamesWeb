@@ -15,18 +15,30 @@
 - [x] Kauliņu (dice rating) atstarpes/wrap/mobile fix
 - [x] Versijas numurs footerī (git commit hash, live)
 - [x] Footer paraksta saite
+- [x] 2. punkts: reāli lietotāju konti + vērtējumu piesaiste kontam (skat. detaļas zemāk)
+- [x] Bonus fix: CSRF/error page crash (footer izmantoja `appVersion`, kas nebija pieejams, kad `csrf()` middleware izmeta kļūdu pirms tā tika iestatīts - atklāts, testējot reālu rating flow)
+- [x] Admin var izveidot lietotājus caur UI (`/admin/users`) ar pagaidu paroli, nevis tikai CLI skriptu
+- [x] Admin var atiestatīt jebkura lietotāja paroli caur UI
+- [x] Admin var rediģēt jebkura lietotāja username/displayName caur UI (ja rediģē savu paša kontu, sesija atjaunojas uzreiz, nav jārelogojas)
+- [x] Profila lapa: lietotājs pats var iestatīt dzimšanas datumu un nomainīt paroli (nav obligāti pēc admin atiestatīšanas, tikai maigs atgādinājums)
+- [x] Vecums vērtējumos tagad rēķinās automātiski no dzimšanas datuma (nevis manuāli rakstīts teksts), redzams uzreiz līdzās vārdam
 
 ## Lielie funkciju pieprasījumi (lietotāja saraksts)
 
 ### 1. Admin panelis - maksimālas iespējas
-- [ ] Precizēt, kas tieši "max iespējas" nozīmē - saraksts ar konkrētām funkcijām (skat. zemāk, daļēji pārklājas ar citiem punktiem)
+- [x] Lietotāju izveide caur UI ar pagaidu paroli (`/admin/users`, 2026-09-09)
+- [x] Paroles atiestatīšana jebkuram lietotājam caur UI
+- [x] Username/displayName rediģēšana jebkuram lietotājam caur UI
+- [ ] Precizēt, kas vēl ietilpst "max iespējās" - pārējais lielā mērā pārklājas ar 4. punktu (spēļu pievienošana admin panelī)
 
-### 2. Reāli lietotāju konti ģimenes locekļiem
-- Precizējums (2026-09-09): vērtējumi ir tīri no ģimenes locekļiem. Katrs loceklis dabū savu kontu, ielogojas pats un iedod savu vērtējumu. Admin var labot/dzēst jebkura cita vērtējumu pēc saviem ieskatiem (jau daļēji ir - admin toggle/delete pastāv `views/admin/users.ejs`, jāpārbauda vai tas sedz arī rating edit pēc admin, ne tikai paša autora).
-- [ ] Katrs ģimenes loceklis dabū savu kontu (username+parole), ielogojas pats
-- [ ] Vērtējums tiek piesaistīts ielogotajam kontam, nevis brīvi izvēlētam vārdam no saraksta (tagad `ratingUsers` array vairs nebūtu vajadzīgs, vai paliek kā fallback vieslietotājiem)
-- [ ] Admin var labot/dzēst jebkuru vērtējumu neatkarīgi no autora (nevis tikai savu)
-- [ ] Lēmums: vai admin izveido kontus (kā tagad ar `createUser.js`), vai ir arī pašu-reģistrācija ģimenes lokam
+### 2. Reāli lietotāju konti ģimenes locekļiem - DONE (2026-09-09)
+- [x] Katrs ģimenes loceklis dabū savu kontu (username+parole via `createUser.js --name="..."`), ielogojas pats
+- [x] Vērtējums tiek piesaistīts ielogotajam kontam (`rating.userId`), nevis brīvi izvēlētam vārdam - `ratingUsers`/`config/users.js` vairs netiek lietots kodā, atstāts kā atsauce migrācijai
+- [x] Viens vērtējums per lietotājs per spēle (serverī pārbaudīts, `routes/ratings.js`), lietotājs var rediģēt savu esošo vērtējumu
+- [x] Admin var labot/dzēst jebkuru vērtējumu neatkarīgi no autora (edit: admin vai autors; delete: tikai admin)
+- [x] Migrācijas skripts `scripts/migrateRatingsToUsers.js` - sasaista vecos vērtējumus (tikai `name` string) ar jauniem kontiem pēc displayName/username sakritības (`--dry-run` pieejams priekšskatam)
+- [ ] **Nākamais solis tev**: izveido reālus kontus katram ģimenes loceklim caur `/admin/users` ar vienkāršu attēloto vārdu **bez** vecuma piedēkļa (piem. "Imants", nevis "Imants (35+ gadi)" - vecums tagad rēķinās automātiski no dzimšanas datuma, ko katrs pats iestata profilā, tāpēc vecs piedēklis dublētos ekrānā). Migrācijas skripts salīdzina vārdus, ignorējot veco " (XX gadi)"/" (XX+ gadi)" piedēkli, tāpēc "Imants" sasaistīsies ar veco "Imants (35+ gadi)" ierakstu. Palaid `node scripts/migrateRatingsToUsers.js --dry-run`, pārbaudi rezultātu, tad bez `--dry-run`
+- [ ] Lēmums vēl neapstiprināts: vai admin izveido kontus (kā tagad), vai ir arī pašu-reģistrācija ģimenes lokam - pagaidām palicis kā admin-only (`createUser.js`), atbilst esošajai UI/route struktūrai
 
 ### 3. Labāki spēļu apraksti
 - Izvēlētā pieeja (2026-09-09): BoardGameGeek (BGG) API kā datu avots

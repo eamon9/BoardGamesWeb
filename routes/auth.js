@@ -42,7 +42,9 @@ router.post("/login", loginRateLimiter, async (req, res) => {
     req.session.user = {
       id: user._id,
       username: user.username,
+      displayName: user.displayName || user.username,
       isAdmin: user.isAdmin,
+      canRate: user.canRate,
     };
 
     req.session.save((err) => {
