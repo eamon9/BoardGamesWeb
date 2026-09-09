@@ -1,24 +1,38 @@
 // createOrUpdateUser.js
+// Lietošana: node createUser.js <username> <password> [--admin]
+// Parole vairs netiek glabāta kodā - tas ir svarīgi, jo šis repo ir publisks.
+
 import dotenv from "dotenv";
 dotenv.config();
 
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import User from "./models/User.js"; // pielāgo ceļu, ja vajag
+import User from "./models/User.js";
 
 async function createOrUpdateUser() {
+  const [username, plainPassword, ...flags] = process.argv.slice(2);
+  const isAdmin = flags.includes("--admin");
+
+  if (!username || !plainPassword) {
+    console.error("❌ Lietošana: node createUser.js <username> <password> [--admin]");
+    process.exit(1);
+  }
+
+  if (plainPassword.toLowerCase() === username.toLowerCase()) {
+    console.error("❌ Parole nevar būt vienāda ar lietotājvārdu. Izvēlies drošāku paroli.");
+    process.exit(1);
+  }
+
   try {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("✅ MongoDB connected");
 
-    const username = "Toms";
-    const plainPassword = "toms";
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
     const update = {
       username,
       password: hashedPassword,
-      isAdmin: false,
+      isAdmin,
       canRate: true,
     };
 
@@ -38,6 +52,7 @@ async function createOrUpdateUser() {
     console.log("🔌 MongoDB disconnected");
   } catch (err) {
     console.error("❌ Error:", err);
+    process.exit(1);
   }
 }
 

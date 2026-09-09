@@ -84,7 +84,10 @@
                 <input type="text" name="comment" value="<%= rating.comment %>" class="form-control" placeholder="Komentārs">
               </div>
               <button type="submit" class="btn btn-primary btn-sm">Saglabāt</button>
-              <a href="/game/<%= game._id %>/ratings/<%= index %>/delete" class="btn btn-danger btn-sm">Dzēst</a>
+            </form>
+            <form action="/game/<%= game._id %>/ratings/<%= index %>/delete" method="POST" class="mt-2 d-inline">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="btn btn-danger btn-sm">Dzēst</button>
             </form>
             <% } %>
           </div>
