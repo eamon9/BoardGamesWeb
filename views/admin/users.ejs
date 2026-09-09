@@ -5,38 +5,42 @@
     <div class="card mb-4">
       <div class="card-body">
         <h5 class="card-title">Izveidot jaunu lietotāju</h5>
-        <form action="/admin/users/new" method="POST" class="row g-2 align-items-end">
+        <form action="/admin/users/new" method="POST" class="row g-2 align-items-start">
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <div class="col-md-3">
             <label class="form-label">Lietotājvārds</label>
             <input type="text" name="username" class="form-control" required>
+            <div class="form-text">Ar šo lietotājs ielogojas. Nav redzams citiem.</div>
           </div>
           <div class="col-md-3">
             <label class="form-label">Attēlotais vārds</label>
             <input type="text" name="displayName" class="form-control" placeholder="piem. Imants">
+            <div class="form-text">Šis vārds redzams pie vērtējumiem, ne login lapā.</div>
           </div>
           <div class="col-md-3">
             <label class="form-label">Pagaidu parole</label>
             <input type="text" name="password" class="form-control" required minlength="6">
+            <div class="form-text">Pastāsti to lietotājam, viņš var to vēlāk nomainīt savā profilā.</div>
           </div>
-          <div class="col-md-2 form-check ms-2">
+          <div class="col-md-2 form-check ms-2 mt-md-4">
             <input type="checkbox" name="isAdmin" class="form-check-input" id="newUserIsAdmin">
             <label class="form-check-label" for="newUserIsAdmin">Admin</label>
           </div>
-          <div class="col-md-1">
+          <div class="col-md-1 mt-md-4">
             <button type="submit" class="btn btn-primary w-100">Izveidot</button>
           </div>
         </form>
       </div>
     </div>
 
+    <div class="table-responsive">
     <table class="table table-striped mt-4">
       <thead>
         <tr>
-          <th>Username</th>
-          <th>Attēlotais vārds</th>
+          <th>Lietotājvārds <span class="text-muted fw-normal">(login)</span></th>
+          <th>Attēlotais vārds <span class="text-muted fw-normal">(vērtējumos)</span></th>
           <th>Admin Status</th>
-          <th>Actions</th>
+          <th>Darbības</th>
         </tr>
       </thead>
       <tbody>
@@ -88,6 +92,7 @@
           <% }) %>
       </tbody>
     </table>
+    </div>
 
     <a href="/admin/dashboard" class="btn btn-secondary mt-3">Back to Dashboard</a>
   </div>

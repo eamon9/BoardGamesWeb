@@ -29,6 +29,8 @@
 - [x] Lietotāju izveide caur UI ar pagaidu paroli (`/admin/users`, 2026-09-09)
 - [x] Paroles atiestatīšana jebkuram lietotājam caur UI
 - [x] Username/displayName rediģēšana jebkuram lietotājam caur UI
+- [x] Fix (2026-09-10): lietotājs nevarēja rediģēt savu vērtējumu - `routes/index.js` `.populate("ratings.userId", ...)` aizvietoja `rating.userId` ar pilnu objektu, `game.ejs` salīdzināja `String(objekts)` ("[object Object]") pret lietotāja ID, nekad nesakrita
+- [x] Admin panelis (`/admin/users`) un profila lapa: skaidrāki paskaidrojumi (username vs displayName vs parole), tabula `.table-responsive` mobilajam skatam
 - [ ] Precizēt, kas vēl ietilpst "max iespējās" - pārējais lielā mērā pārklājas ar 4. punktu (spēļu pievienošana admin panelī)
 
 ### 2. Reāli lietotāju konti ģimenes locekļiem - DONE (2026-09-09)

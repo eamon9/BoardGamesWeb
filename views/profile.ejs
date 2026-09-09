@@ -8,8 +8,14 @@
   </div>
   <% } %>
 
-  <p>Lietotājvārds: <strong><%= profileUser.username %></strong></p>
-  <p>Attēlotais vārds: <strong><%= profileUser.displayName || profileUser.username %></strong></p>
+  <p class="mb-1">
+    Lietotājvārds: <strong><%= profileUser.username %></strong>
+    <span class="text-muted d-block d-sm-inline">(ar šo ielogojies, citiem nav redzams)</span>
+  </p>
+  <p class="mb-1">
+    Attēlotais vārds: <strong><%= profileUser.displayName || profileUser.username %></strong>
+    <span class="text-muted d-block d-sm-inline">(šis vārds redzams pie taviem vērtējumiem)</span>
+  </p>
   <% const ageLabel = profileUser.getAgeLabel(); %>
   <% if (ageLabel) { %>
   <p>Vecums: <strong><%= ageLabel %></strong></p>
@@ -21,7 +27,7 @@
       <p class="text-muted">Izmanto, lai vecums vērtējumos vienmēr rādītos aktuāls.</p>
       <form action="/profile/birthdate" method="POST" class="row g-2 align-items-end">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <div class="col-auto">
+        <div class="col-12 col-sm-auto">
           <input
             type="date"
             name="birthDate"
@@ -30,8 +36,8 @@
             required
           >
         </div>
-        <div class="col-auto">
-          <button type="submit" class="btn btn-primary">Saglabāt</button>
+        <div class="col-12 col-sm-auto">
+          <button type="submit" class="btn btn-primary w-100">Saglabāt</button>
         </div>
       </form>
     </div>
@@ -40,18 +46,21 @@
   <div class="card mb-4">
     <div class="card-body">
       <h5 class="card-title">Nomainīt paroli</h5>
+      <p class="text-muted">
+        Šeit vari nomainīt savu paroli jebkurā laikā - piemēram, ja admins tev uzlika pagaidu paroli.
+      </p>
       <form action="/profile/change-password" method="POST" class="row g-2 align-items-end">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <div class="col-auto">
+        <div class="col-12 col-sm-auto">
           <label class="form-label">Pašreizējā parole</label>
           <input type="password" name="currentPassword" class="form-control" required>
         </div>
-        <div class="col-auto">
+        <div class="col-12 col-sm-auto">
           <label class="form-label">Jaunā parole</label>
           <input type="password" name="newPassword" class="form-control" required minlength="6">
         </div>
-        <div class="col-auto">
-          <button type="submit" class="btn btn-primary">Nomainīt</button>
+        <div class="col-12 col-sm-auto">
+          <button type="submit" class="btn btn-primary w-100">Nomainīt</button>
         </div>
       </form>
     </div>

@@ -93,11 +93,16 @@ router.get("/game/:id", async (req, res) => {
     // Ja vērtējums ir saistīts ar reālu kontu, rādām tā aktuālo vārdu un
     // no dzimšanas datuma aprēķinātu vecumu, nevis "iesaldēto" name lauku
     // (vecajiem, vēl nesaistītajiem vērtējumiem name paliek kā ir).
+    // populate() aizvieto rating.userId ar pilnu lietotāja objektu, tāpēc
+    // to saglabājam atsevišķi kā userId (atpakaļ uz ID), lai game.ejs var
+    // salīdzināt to ar ielogotā lietotāja ID (String(objekts) būtu
+    // "[object Object]", nekad nesakristu).
     game.ratings = (game.ratings || []).map((rating) => {
       const account = rating.userId;
       if (!account) return rating;
       return {
         ...rating,
+        userId: account._id,
         name: account.displayName || account.username || rating.name,
         ageLabel: getAgeLabel(account.birthDate),
       };

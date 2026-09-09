@@ -19,9 +19,11 @@ Note: not related to the separate Grannies-LV-page / vecmaminas.lv project (a di
 - No extra steps needed for CSP: `app.js` only adds Helmet's `upgradeInsecureRequests` directive when `NODE_ENV === "production"`. Locally (`development`) it's off automatically, this used to break every asset (CSS/JS/images) with a browser "SSL error" because Helmet forced HTTPS upgrades on a plain HTTP dev server, fixed 2026-09-09.
 
 ## Version tracking
-- Footer shows `v. <hash>` (git commit short hash) via `getAppVersion()` in `app.js`, called fresh on every request: `RENDER_GIT_COMMIT` on Render (static per deploy, no exec needed), else local `git rev-parse --short HEAD`, else `dev`
-- Because it's read per request rather than cached at startup, the local dev server does NOT need a restart after a `git commit`, just reload the page and it matches `HEAD`
-- To compare with what's actually live on Render, check the footer value against `git log --oneline -1` (or the latest commit on GitHub) after a deploy finishes
+- Footer shows `v. YYYY-MM-DD HH:mm (hash)` (2026-09-10, changed from a hash-only, per-request value): the timestamp is when the running process actually started, captured once as a top-level const in `app.js` at module load, not re-read per request
+- A restart is the real signal that new code is live (nodemon auto-restarting locally after a file save, or Render restarting on every deploy), so this is a more direct freshness check than re-reading git per request
+- `(hash)` is the git commit it started from: `RENDER_GIT_COMMIT` on Render, else local `git rev-parse --short HEAD`, else `dev`
+- Because it's captured once at startup, the local dev server DOES need an actual restart (nodemon does this automatically on save, plain `node app.js` needs a manual restart) for the footer to reflect new code, a `git commit` alone changes nothing here
+- To compare with what's actually live on Render, check the footer timestamp against when the deploy finished, and the hash against `git log --oneline -1`
 
 ## Tech stack
 - Node.js + Express 5, ES modules (`type: module`)

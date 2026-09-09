@@ -24,14 +24,22 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// App version shown in the footer, so we can tell at a glance whether a
-// deploy actually went live. Render sets RENDER_GIT_COMMIT automatically
-// and restarts the process on every deploy, so reading it once at startup
-// is always correct there. Locally there's no restart-on-commit, so we
-// read the current git commit fresh on every request instead, otherwise
-// the footer would keep showing a stale hash until the dev server is
-// manually restarted.
-function getAppVersion() {
+// App version shown in the footer: WHEN this running process actually
+// started, down to the minute, plus the git commit it started from.
+// A restart is the actual signal that new code is live, whether that's
+// nodemon auto-restarting locally after a file save, or Render
+// restarting the process on every deploy - so the timestamp captured
+// once here, at module load time, is a more direct freshness check than
+// re-reading git on every request. Format: YYYY-MM-DD HH:mm (commit).
+function formatTimestamp(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return (
+    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
+    ` ${pad(date.getHours())}:${pad(date.getMinutes())}`
+  );
+}
+
+function getGitCommit() {
   if (process.env.RENDER_GIT_COMMIT) {
     return process.env.RENDER_GIT_COMMIT.slice(0, 7);
   }
@@ -43,6 +51,8 @@ function getAppVersion() {
     return "dev";
   }
 }
+
+const appVersion = `${formatTimestamp(new Date())} (${getGitCommit()})`;
 
 // MongoDB connection
 try {
@@ -104,7 +114,7 @@ app.use(flash());
 // otherwise rendering the error page crashes a second time on a missing
 // variable and leaks a raw Node stack trace to the browser.
 app.use((req, res, next) => {
-  res.locals.appVersion = getAppVersion();
+  res.locals.appVersion = appVersion;
   next();
 });
 app.use(csrf());
