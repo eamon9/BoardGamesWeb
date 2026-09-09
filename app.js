@@ -61,7 +61,13 @@ app.use(
           "https://cdnjs.cloudflare.com",
         ],
         objectSrc: ["'none'"],
-        upgradeInsecureRequests: [],
+        // Only force HTTPS upgrades in production. Locally the dev server
+        // is plain HTTP, so this directive would break every asset with an
+        // SSL error (browser tries HTTPS on a port with no TLS listener).
+        // Helmet adds this directive from its own defaults unless it is
+        // explicitly disabled with `null`, omitting the key is not enough.
+        upgradeInsecureRequests:
+          process.env.NODE_ENV === "production" ? [] : null,
       },
     },
   })

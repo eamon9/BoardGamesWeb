@@ -1,7 +1,13 @@
 body {
   background-color: #f1e0c5;
   color: #333;
-  font-size: 1.5rem;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 576px) {
+  body {
+    font-size: 1rem;
+  }
 }
 
 h1 {

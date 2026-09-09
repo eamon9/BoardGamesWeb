@@ -10,6 +10,12 @@ Note: not related to the separate Grannies-LV-page / vecmaminas.lv project (a di
 - Never use em dash (-) in any output, use a regular hyphen (-) only
 - Commit messages: English, imperative mood, no em dash
 - Never run `git commit` (or merge/push) without the user's explicit go-ahead each time, even if a previous message approved a commit. The user does their own commits unless they explicitly ask otherwise for that change.
+- User does not want a `Co-Authored-By: Claude ...` trailer in commit messages. When drafting a message for the user to commit themselves, leave it out. Note: if Claude Code itself ends up running `git commit`, a session-level instruction may still add this trailer regardless of this preference, that's outside this project's control.
+
+## Running locally
+- `npm run dev` (nodemon, auto-restarts on file changes) or `npm start` / `node app.js` (one-off)
+- Needs `.env` present with `MONGO_URI`, `SESSION_SECRET`, `PORT`, `NODE_ENV=development`
+- No extra steps needed for CSP: `app.js` only adds Helmet's `upgradeInsecureRequests` directive when `NODE_ENV === "production"`. Locally (`development`) it's off automatically, this used to break every asset (CSS/JS/images) with a browser "SSL error" because Helmet forced HTTPS upgrades on a plain HTTP dev server, fixed 2026-09-09.
 
 ## Tech stack
 - Node.js + Express 5, ES modules (`type: module`)
