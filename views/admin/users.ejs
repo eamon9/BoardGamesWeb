@@ -33,66 +33,74 @@
       </div>
     </div>
 
-    <div class="table-responsive">
-    <table class="table table-striped mt-4">
-      <thead>
-        <tr>
-          <th>Lietotājvārds <span class="text-muted fw-normal">(login)</span></th>
-          <th>Attēlotais vārds <span class="text-muted fw-normal">(vērtējumos)</span></th>
-          <th>Admin Status</th>
-          <th>Darbības</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% users.forEach(user=> { %>
-          <% const editFormId = 'editUser-' + user._id; %>
-          <tr>
-            <td>
-              <!-- Tukšs forms elements tikai CSRF tokenam - pārējie
-                   redzamie lauki (šajā un citos <td>) pievienoti šai
-                   formai ar form="<%= editFormId %>", jo <form> nedrīkst
-                   aptvert vairākus <td> tieši. -->
-              <form id="<%= editFormId %>" action="/admin/users/<%= user._id %>/edit" method="POST">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-              </form>
-              <input type="text" name="username" form="<%= editFormId %>" class="form-control form-control-sm" value="<%= user.username %>" required style="min-width: 120px;">
-              <% if (user.passwordTemporary) { %>
-                <span class="badge bg-warning text-dark ms-1" title="Lietotājam ir admina uzliktā pagaidu parole">pagaidu parole</span>
-                <% } %>
-            </td>
-            <td>
-              <input type="text" name="displayName" form="<%= editFormId %>" class="form-control form-control-sm" value="<%= user.displayName || '' %>" placeholder="piem. Imants" style="min-width: 120px;">
-            </td>
-            <td>
+    <h5 class="mt-4 mb-3">Lietotāji (<%= users.length %>)</h5>
+
+    <% users.forEach(user=> { %>
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+          <div>
+            <div class="fs-5 fw-semibold">
+              <%= user.displayName || user.username %>
               <% if (user.isAdmin) { %>
                 <span class="badge bg-success">Admin</span>
                 <% } else { %>
-                  <span class="badge bg-secondary">User</span>
+                  <span class="badge bg-secondary">Lietotājs</span>
                   <% } %>
-            </td>
-            <td>
-              <button type="submit" form="<%= editFormId %>" class="btn btn-sm btn-outline-primary me-2">Saglabāt vārdu</button>
-              <form action="/admin/users/<%= user._id %>/toggle-admin" method="POST" class="d-inline">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button type="submit" class="btn btn-sm btn-warning me-2">
-                  <%= user.isAdmin ? 'Remove Admin' : 'Make Admin' %>
-                </button>
-              </form>
-              <form action="/admin/users/<%= user._id %>/reset-password" method="POST" class="d-inline-flex gap-1 align-items-center me-2">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <input type="text" name="password" class="form-control form-control-sm" style="width: 140px;" placeholder="Jauna parole" required minlength="6">
-                <button type="submit" class="btn btn-sm btn-secondary">Atiestatīt</button>
-              </form>
-              <form action="/admin/users/<%= user._id %>/delete" method="POST" class="d-inline">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-              </form>
-            </td>
-          </tr>
-          <% }) %>
-      </tbody>
-    </table>
+                  <% if (user.passwordTemporary) { %>
+                    <span class="badge bg-warning text-dark" title="Lietotājam ir admina uzliktā pagaidu parole">pagaidu parole</span>
+                    <% } %>
+            </div>
+            <div class="text-muted small">login: <%= user.username %></div>
+          </div>
+          <form action="/admin/users/<%= user._id %>/delete" method="POST"
+                onsubmit="return confirm('Tiešām dzēst lietotāju &quot;<%= user.username %>&quot;? Šo nevar atsaukt.');">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="btn btn-sm btn-outline-danger">Dzēst</button>
+          </form>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <form action="/admin/users/<%= user._id %>/edit" method="POST" class="row g-2">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <div class="col-6">
+                <label class="form-label small mb-1 text-muted">Lietotājvārds (login)</label>
+                <input type="text" name="username" class="form-control form-control-sm" value="<%= user.username %>" required>
+              </div>
+              <div class="col-6">
+                <label class="form-label small mb-1 text-muted">Attēlotais vārds (vērtējumos)</label>
+                <input type="text" name="displayName" class="form-control form-control-sm" value="<%= user.displayName || '' %>" placeholder="piem. Imants">
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-sm btn-outline-primary">Saglabāt vārdu</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <form action="/admin/users/<%= user._id %>/reset-password" method="POST">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <label class="form-label small mb-1 text-muted">Jauna (pagaidu) parole</label>
+              <div class="input-group input-group-sm">
+                <input type="text" name="password" class="form-control" required minlength="6">
+                <button type="submit" class="btn btn-outline-secondary">Atiestatīt</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="col-12 col-md-3 d-flex align-items-end">
+            <form action="/admin/users/<%= user._id %>/toggle-admin" method="POST" class="w-100">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="btn btn-sm btn-outline-warning w-100">
+                <%= user.isAdmin ? 'Noņemt admin tiesības' : 'Piešķirt admin tiesības' %>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
+    <% }) %>
 
     <a href="/admin/dashboard" class="btn btn-secondary mt-3">Back to Dashboard</a>
   </div>

@@ -58,7 +58,7 @@
                 </ul>
               </li>
               <% } else { %>
-                <li class="nav-item"><a class="nav-link" href="/auth/login">Ielogoties</a></li>
+                <li class="nav-item"><a class="nav-link" href="/auth/login?returnTo=<%= encodeURIComponent(currentUrl) %>">Ielogoties</a></li>
                 <% } %>
                   <!-- Papildinājumi beidzas šeit -->
                   

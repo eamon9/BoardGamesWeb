@@ -123,6 +123,11 @@ app.use((req, res, next) => {
   res.locals.error = req.flash("error");
   res.locals.success = req.flash("success");
   res.locals.user = req.session.user || null;
+  // Used by views to build a "log in, then come back here" link
+  // (?returnTo=...) instead of relying on the Referer header, which our
+  // own Referrer-Policy: no-referrer (Helmet default) strips on every
+  // navigation, and which privacy-focused browsers/extensions strip too.
+  res.locals.currentUrl = req.originalUrl;
   next();
 });
 app.use(attachUser);

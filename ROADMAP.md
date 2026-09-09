@@ -31,6 +31,11 @@
 - [x] Username/displayName rediģēšana jebkuram lietotājam caur UI
 - [x] Fix (2026-09-10): lietotājs nevarēja rediģēt savu vērtējumu - `routes/index.js` `.populate("ratings.userId", ...)` aizvietoja `rating.userId` ar pilnu objektu, `game.ejs` salīdzināja `String(objekts)` ("[object Object]") pret lietotāja ID, nekad nesakrita
 - [x] Admin panelis (`/admin/users`) un profila lapa: skaidrāki paskaidrojumi (username vs displayName vs parole), tabula `.table-responsive` mobilajam skatam
+- [x] Admin lietotāju saraksts pārtaisīts no cieša tabulas rindu izkārtojuma uz karšu (card) izkārtojumu - katram lietotājam sava karte ar skaidri nodalītām sadaļām (vārda maiņa / paroles atiestatīšana / admin tiesības / dzēst), dabiski sakrājas vienā kolonnā mobilajā, dzēšanai pievienots apstiprinājuma dialogs
+- [x] Fix (2026-09-10): login redirect vienmēr aizveda uz mājaslapu, nevis atpakaļ uz spēles lapu - cēlonis: Helmet noklusētais `Referrer-Policy: no-referrer` liedza pārlūkam sūtīt `Referer` header, uz ko paļāvās kods. Tagad izmanto `?returnTo=` URL parametru (`res.locals.currentUrl` + hidden form lauks, lai izturētu arī vairākus neveiksmīgus login mēģinājumus)
+- [x] Login forma: pievienoti `autocomplete="username"`/`"current-password"` atribūti (varēja izraisīt neskaidru pārlūka autofill/autocomplete uzvedību)
+- [x] Migrācijas skripts uzlabots ar pirmā-vārda fallback sasaisti (ja konta displayName tagad satur uzvārdu, piem. "Toms Brokāns", tas joprojām sasaistās ar veco "Toms (11+ gadi)" vērtējumu) - ambigū gadījumi (vairāki konti ar to pašu pirmo vārdu) netiek automātiski sasaistīti
+- [x] Migrācija palaista reāli (2026-09-10): 19/23 vērtējumi sasaistīti (Santa, Toms, Imants). Atlikusi Paula - vēl nav konta, palaid `node scripts/migrateRatingsToUsers.js` vēlreiz pēc konta izveides
 - [ ] Precizēt, kas vēl ietilpst "max iespējās" - pārējais lielā mērā pārklājas ar 4. punktu (spēļu pievienošana admin panelī)
 
 ### 2. Reāli lietotāju konti ģimenes locekļiem - DONE (2026-09-09)

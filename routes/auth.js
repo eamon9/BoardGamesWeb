@@ -9,23 +9,51 @@ import {
 
 const router = express.Router();
 
+// Only allow redirecting back to a relative path on this same site, never
+// to another host - otherwise ?returnTo= could be used for open-redirect
+// phishing (e.g. returnTo=https://evil.example.com or returnTo=//evil.example.com).
+function isSafeReturnPath(path) {
+  return (
+    typeof path === "string" &&
+    path.startsWith("/") &&
+    !path.startsWith("//") &&
+    !path.includes("://")
+  );
+}
+
 router.get("/login", (req, res) => {
-  req.session.returnTo = req.get("referer") || "/"; // Store referer for redirect
-  res.render("auth/login");
+  // ?returnTo= (set by the login links themselves, see res.locals.currentUrl
+  // in app.js) is preferred over the Referer header, which our own
+  // Referrer-Policy: no-referrer strips on every navigation anyway.
+  const returnTo = req.query.returnTo;
+  req.session.returnTo = isSafeReturnPath(returnTo)
+    ? returnTo
+    : req.get("referer") || "/";
+  res.render("auth/login", {returnTo: req.session.returnTo});
 });
 
 router.post("/login", loginRateLimiter, async (req, res) => {
   const {username, password} = req.body;
 
+  // The login form also carries returnTo as a hidden field (see
+  // views/auth/login.ejs), so it survives even across several failed
+  // attempts that redirect back to GET /login in between - relying on
+  // req.session.returnTo alone would let a fresh GET (with no ?returnTo=)
+  // reset it back to "/" on a retry.
+  const returnTo = isSafeReturnPath(req.body.returnTo)
+    ? req.body.returnTo
+    : req.session.returnTo || "/";
+  const loginPageUrl = `/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
+
   // Check for existing session
   if (req.session.user) {
-    return res.redirect(req.session.returnTo || "/");
+    return res.redirect(returnTo);
   }
 
   // Validate inputs
   if (!username || !password) {
     req.flash("error", "Lietotājvārds un parole ir obligāti");
-    return res.redirect("/auth/login");
+    return res.redirect(loginPageUrl);
   }
 
   try {
@@ -34,7 +62,7 @@ router.post("/login", loginRateLimiter, async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       recordFailedAttempt(req._rateLimitKey);
       req.flash("error", "Nepareizs lietotājvārds vai parole");
-      return res.redirect("/auth/login");
+      return res.redirect(loginPageUrl);
     }
 
     clearAttempts(req._rateLimitKey);
@@ -51,14 +79,14 @@ router.post("/login", loginRateLimiter, async (req, res) => {
       if (err) {
         console.error("❌ Session save error:", err);
         req.flash("error", "Pieslēgšanās kļūda");
-        return res.redirect("/auth/login");
+        return res.redirect(loginPageUrl);
       }
-      return res.redirect(req.session.returnTo || "/");
+      return res.redirect(returnTo);
     });
   } catch (err) {
     console.error("❌ Login error:", err);
     req.flash("error", "Servera kļūda");
-    res.redirect("/auth/login");
+    res.redirect(loginPageUrl);
   }
 });
 

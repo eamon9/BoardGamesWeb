@@ -25,6 +25,13 @@ function normalize(str) {
     .replace(/\s*\(\s*\d+\+?\s*gadi\s*\)\s*$/i, "");
 }
 
+// Pirmais vārds no normalizēta teksta, piem. "toms brokāns" -> "toms".
+// Izmanto kā fallback, ja konta displayName tagad satur uzvārdu (piem.
+// "Toms Brokāns"), kas vairs precīzi nesakrīt ar veco "Toms (11+ gadi)".
+function firstWord(str) {
+  return str.split(/\s+/)[0];
+}
+
 async function migrate() {
   const dryRun = process.argv.includes("--dry-run");
 
@@ -38,17 +45,29 @@ async function migrate() {
       process.exit(1);
     }
 
-    // Karte pēc normalizēta displayName/username -> User
+    // Karte pēc normalizēta displayName/username -> User (precīzai sakritībai)
     const byNormalizedName = new Map();
+    // Karte pēc pirmā vārda -> visi konti ar šo pirmo vārdu (fallback, ja
+    // precīza sakritība neizdodas, piem. konta displayName tagad satur
+    // uzvārdu). Ja vairāki konti dala to pašu pirmo vārdu, fallback
+    // NETIEK piemērots automātiski - tas prasa manuālu izšķiršanos, lai
+    // nesasaistītu vērtējumu ar nepareizu personu.
+    const byFirstWord = new Map();
     for (const u of users) {
-      if (u.displayName) byNormalizedName.set(normalize(u.displayName), u);
-      byNormalizedName.set(normalize(u.username), u);
+      const names = [u.displayName, u.username].filter(Boolean).map(normalize);
+      for (const n of names) {
+        byNormalizedName.set(n, u);
+        const fw = firstWord(n);
+        if (!byFirstWord.has(fw)) byFirstWord.set(fw, new Set());
+        byFirstWord.get(fw).add(u);
+      }
     }
 
     const games = await Game.find({});
     let matchedCount = 0;
     let alreadyLinkedCount = 0;
     const unmatchedNames = new Set();
+    const ambiguousNames = new Set();
     let gamesChanged = 0;
 
     for (const game of games) {
@@ -58,12 +77,21 @@ async function migrate() {
           alreadyLinkedCount++;
           continue;
         }
-        const match = byNormalizedName.get(normalize(rating.name));
+        const normalizedName = normalize(rating.name);
+        let match = byNormalizedName.get(normalizedName);
+        if (!match) {
+          const candidates = byFirstWord.get(firstWord(normalizedName));
+          if (candidates && candidates.size === 1) {
+            match = [...candidates][0];
+          } else if (candidates && candidates.size > 1) {
+            ambiguousNames.add(rating.name);
+          }
+        }
         if (match) {
           rating.userId = match._id;
           matchedCount++;
           changed = true;
-        } else {
+        } else if (!ambiguousNames.has(rating.name)) {
           unmatchedNames.add(rating.name);
         }
       }
@@ -76,11 +104,16 @@ async function migrate() {
     console.log(`\n📊 Rezultāts:`);
     console.log(`   Jau bija saistīti: ${alreadyLinkedCount}`);
     console.log(`   Jauni sasaistīti: ${matchedCount} (${gamesChanged} spēlēs)`);
+    if (ambiguousNames.size > 0) {
+      console.log(`   Neskaidri vārdi (vairāki konti ar to pašu pirmo vārdu, nesasaistīts automātiski):`);
+      for (const name of ambiguousNames) console.log(`     - "${name}"`);
+    }
     if (unmatchedNames.size > 0) {
       console.log(`   Nesasaistīti vārdi (nav atrasts konts ar šādu displayName/username):`);
       for (const name of unmatchedNames) console.log(`     - "${name}"`);
       console.log(`   Izveido kontus šiem vārdiem un palaid skriptu vēlreiz.`);
-    } else {
+    }
+    if (ambiguousNames.size === 0 && unmatchedNames.size === 0) {
       console.log(`   Visi vārdi tika sasaistīti.`);
     }
 
